@@ -1,0 +1,19 @@
+$ttl 38400
+101.10.in-addr.arpa.	IN	SOA	ceph-admin.lab. admin.ceph-admin. (
+			1441354888
+			10800
+			3600
+			604800
+			38400 )
+101.10.in-addr.arpa.	IN	NS	ceph-admin.lab.
+10.0.101.10.in-addr.arpa.	IN	PTR	ceph-admin.
+10.2.101.10.in-addr.arpa.	IN	PTR	devstack.
+10.4.101.10.in-addr.arpa.	IN	PTR	radosgw.
+10.6.101.10.in-addr.arpa.	IN	PTR	mon1.
+10.7.101.10.in-addr.arpa.	IN	PTR	mon2.
+11.6.101.10.in-addr.arpa.	IN	PTR	mon3.
+10.8.101.10.in-addr.arpa.	IN	PTR	osd-node1.
+10.9.101.10.in-addr.arpa.	IN	PTR	osd-node2.
+11.8.101.10.in-addr.arpa.	IN	PTR	osd-node3.
+11.9.101.10.in-addr.arpa.	IN	PTR	osd-node4.
+12.8.101.10.in-addr.arpa.	IN	PTR	osd-node5.

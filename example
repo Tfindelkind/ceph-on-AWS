@@ -1,0 +1,1 @@
+python install.py -c ./install.conf -t -u ubuntu 
