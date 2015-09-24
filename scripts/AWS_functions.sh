@@ -31,7 +31,7 @@ function create_igw () {
 			aws ec2 create-tags --resources $IGWID --tags "Key=Name,Value=igw-$LAB_NAME"
 			IGW_EXISTS=false
 			echo "Internet Gateway: $IGWID created"
-		else
+		else 
 			echo "Internet Gateway: $IGWID exist and is attached"
 			IGW_EXISTS=true
 	fi			
@@ -47,6 +47,7 @@ function attach_igw () {
 function get_main_route_table () {
 	
 	MAINROUTETABLEID=`aws ec2 describe-route-tables --output=text --filters Name=vpc-id,Values=$VPCID Name=association.main,Values=true --query 'RouteTables[*].Associations[*].RouteTableId'`
+	aws ec2 create-tags --resources $MAINROUTETABLEID --tags "Key=Name,Value=mrt-$LAB_NAME"
 	echo "Main route table: $MAINROUTETABLEID added to: $VPCID"
 	
 	
