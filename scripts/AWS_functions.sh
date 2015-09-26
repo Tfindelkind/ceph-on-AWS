@@ -8,6 +8,11 @@ function get_vpcid () {
 	VPCID=`aws ec2 describe-vpcs --output text --filter Name=tag:Name,Values=$VPC_NAME --query 'Vpcs[].VpcId'`
 	
 }
+
+function get_igw () {
+	IGWID=`aws ec2 describe-internet-gateways --output text --filter Name=attachment.vpc-id,Values=$VPCID --query 'InternetGateways[*].InternetGatewayId'`
+		
+}
  
 function create_vpc () {  
 		
@@ -28,12 +33,10 @@ function create_vpc () {
 function create_igw () {
 
 	
-	IGWID=`aws ec2 describe-internet-gateways --output text --filter Name=attachment.vpc-id,Values=$VPCID --query 'InternetGateways[*].InternetGatewayId'`
-	
 	if [[ -z "$IGWID" ]]; 
 		then
 			IGWID=`aws ec2 create-internet-gateway --query 'InternetGateway.InternetGatewayId' --output text` 
-			aws ec2 create-tags --resources $IGWID --tags "Key=Name,Value=igw-$LAB_NAME"
+			aws ec2 create-tags --resources $IGWID --tags "Key=Name,Value=igw-$VPC_NAME"
 			IGW_EXISTS=false
 			echo "Internet Gateway: $IGWID created"
 		else 
@@ -110,12 +113,18 @@ function run_instance () {
 #$6 = Subnet ID
 #$7 = private IP Address
 #$8 = Instance Name
+#$9 = Public IP
 
 	
 	local __InstanceId=$1
 	local InstanceId
 	
-	InstanceId=`aws ec2 run-instances --image-id $2 --count 1 --instance-type $3 --key-name $4 --security-group-ids $5 --subnet-id $6 --private-ip-address $7 --associate-public-ip-address --query 'Instances[0].InstanceId' --output text` 
+	if [ $9 == 1 ];
+	then
+	 InstanceId=`aws ec2 run-instances --image-id $2 --count 1 --instance-type $3 --key-name $4 --security-group-ids $5 --subnet-id $6 --private-ip-address $7 --associate-public-ip-address --query 'Instances[0].InstanceId' --output text` 
+	else
+	 InstanceId=`aws ec2 run-instances --image-id $2 --count 1 --instance-type $3 --key-name $4 --security-group-ids $5 --subnet-id $6 --private-ip-address $7 --no-associate-public-ip-address --query 'Instances[0].InstanceId' --output text` 	
+	fi 
 	aws ec2 create-tags --resources $InstanceId --tags "Key=Name,Value=$8"
 	echo "Instance $8 with Id: $InstanceId created"
 	
@@ -217,7 +226,7 @@ function terminate_instance_byname () {
 	local __InstanceId=$1
 	local InstanceId
 		 	
-	InstanceId=`aws ec2 describe-instances --filters $filter --output text --filter Name=tag:Name,Values=$2 Name=instance-state-name,Values=pending,running,shutting-down,stopping,stopped --query "Reservations[].Instances[].InstanceId"`	
+	InstanceId=`aws ec2 describe-instances --filters $filter --output text --filters Name=tag:Name,Values=$2 Name=instance-state-name,Values=pending,running,shutting-down,stopping,stopped --query "Reservations[].Instances[].InstanceId"`	
 	disable_api_termination $InstanceId
 		aws ec2 terminate-instances --instance-ids $InstanceId 
 	echo "Instance $2 with ID: $1 terminating"
@@ -229,15 +238,50 @@ function delete_volume_byname () {
 #$1 = Availability Zone
 #$2 = Volume Name
 	
-	VolumeId=`aws ec2 describe-volumes --output text --filter Name=availability-zone,Values=$1 Name=tag:Name,Values=$2 --query "Volumes[].VolumeId"`
+	VolumeId=`aws ec2 describe-volumes --output text --filters Name=availability-zone,Values=$1 Name=tag:Name,Values=$2 --query "Volumes[].VolumeId"`
 	aws ec2 delete-volume --volume-id $VolumeId
 	echo "Volume $2 with ID: $VolumeId deleted"
 	
 }
 
 function delete_route_table_byname () {
+#$1 = Route Table Name	
 	
-	
-	
+	RouteTableId=`aws ec2 describe-route-tables --output text --filters Name=tag:Name,Values=$1 --query "RouteTables[].RouteTableId"`
+	aws ec2 delete-route-table --route-table-id $RouteTableId
+	echo "Route Table $1 with ID: $RouteTableId deleted"
 }	
+
+function detach_igw () {
+
+	aws ec2 detach-internet-gateway --internet-gateway-id $IGWID --vpc-id $VPCID
+	echo "IGW $IGWID detached"
 	
+}
+
+function delete_igw () {
+
+	aws ec2 delete-internet-gateway --internet-gateway-id $IGWID 
+	echo "IGW $IGWID deleted"
+
+}
+
+function delete_vpc () {
+
+	aws ec2 delete-vpc --vpc-id $VPCID
+	echo "VPC $VPCID deleted"
+
+}
+
+function get_public_ip_eni () 
+#$1 = Return public IP address of ENI
+#$2 = ENI ID 
+{
+	local __PublicIp
+	local PublicIp
+	
+	PublicIp=`aws ec2 describe-network-interfaces --network-interface-ids $2 --output text --query "NetworkInterfaces[].PrivateIpAddresses[].Association.PublicIp"`
+	
+	eval $__PublicIp="'$PublicIp'"
+
+}

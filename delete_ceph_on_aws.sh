@@ -18,6 +18,11 @@ IGWID=0
 IGW_EXISTS=0
 
 MAINROUTETABLEID=0
+ROUTETABLE_INTID=0
+ROUTETABLE_EXTID=0
+
+ROUTETABLE_INT="rt-int-$LAB_SUBNET_USER"
+ROUTETABLE_EXT="rt-ext-$LAB_SUBNET_USER"
 
 CEPH_ADMIN="ceph-admin-$LAB_SUBNET_USER"
 DEVSTACK="devstack-$LAB_SUBNET_USER"
@@ -78,6 +83,8 @@ OSD_NODE3_XVDDID=0
 
 get_vpcid
 
+get_igw
+
 terminate_instance_byname OSD_NODE3ID osd-node3-$LAB_SUBNET_USER
 terminate_instance_byname OSD_NODE2ID osd-node2-$LAB_SUBNET_USER
 terminate_instance_byname OSD_NODE1ID osd-node1-$LAB_SUBNET_USER
@@ -94,6 +101,7 @@ while [ `aws ec2 describe-instances --output=text --instance-ids $MON1ID --query
 while [ `aws ec2 describe-instances --output=text --instance-ids $RADOSGWID --query Reservations[*].Instances[*].State.Name` != "terminated" ]; do echo "Wait for terminating OSD_NODE3ID"; done
 while [ `aws ec2 describe-instances --output=text --instance-ids $DEVSTACKID --query Reservations[*].Instances[*].State.Name` != "terminated" ]; do echo "Wait for terminating OSD_NODE3ID"; done
 while [ `aws ec2 describe-instances --output=text --instance-ids $CEPH_ADMINID --query Reservations[*].Instances[*].State.Name` != "terminated" ]; do echo "Wait for terminating OSD_NODE3ID"; done
+
 
 delete_volume_byname $AZ_A $OSD_NODE1-xvdb
 delete_volume_byname $AZ_A $OSD_NODE1-xvdc
@@ -121,6 +129,16 @@ delete_subnet_byname  $SUB_PUB_A
 delete_subnet_byname  $SUB_PUB_B
 delete_subnet_byname  $SUB_CLU_A
 delete_subnet_byname  $SUB_CLU_B
+
+delete_route_table_byname $ROUTETABLE_INT
+delete_route_table_byname $ROUTETABLE_EXT
+
+
+detach_igw
+
+delete_igw
+
+delete_vpc
 
 
 

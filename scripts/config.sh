@@ -6,6 +6,8 @@ AZ_A="eu-central-1a"
 AZ_B="eu-central-1b"
 LAB_SUBNET=100
 LAB_SUBNET_USER=0
+AMI="ami-accff2b1"
+DEVICE_SIZE=8
 
 SUB_EXT_A="sub_ext_a"
 SUB_EXT_B="sub_ext_b"

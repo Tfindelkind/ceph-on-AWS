@@ -70,6 +70,7 @@ OSD_NODE2ID=0
 OSD_NODE3ID=0
 
 CEPH_ADMIN_ENIID=0
+CEPH_ADMIN_PUBLICIP=0
 
 OSD_NODE1_XVDBID=0
 OSD_NODE1_XVDCID=0
@@ -94,6 +95,8 @@ result=0
 #if [ $result -eq 1 ];then exit 0; fi
 		
 get_vpcid
+
+get_igw
 
 create_vpc 
 
@@ -132,25 +135,25 @@ auth_sg_ingress $SG_RGWID all all $VPC_CIDR
 auth_sg_ingress $SG_PUBID all all $VPC_CIDR
 auth_sg_ingress $SG_CLUID all all $VPC_CIDR
 
-run_instance CEPH_ADMINID ami-accff2b1 t2.small ceph-lab $SG_EXTID $SUB_EXT_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.4 $CEPH_ADMIN
-run_instance DEVSTACKID ami-accff2b1 t2.micro ceph-lab $SG_APPID $SUB_APP_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.36 $DEVSTACK
-run_instance RADOSGWID ami-accff2b1 t2.micro ceph-lab $SG_RGWID $SUB_RGW_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.68 $RADOSGW
-run_instance MON1ID ami-accff2b1 t2.micro ceph-lab $SG_PUBID $SUB_PUB_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.100 $MON1
-run_instance OSD_NODE1ID ami-accff2b1 t2.micro ceph-lab $SG_CLUID $SUB_CLU_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.132 $OSD_NODE1
-run_instance OSD_NODE2ID ami-accff2b1 t2.micro ceph-lab $SG_CLUID $SUB_CLU_BID 10.$LAB_SUBNET.$LAB_SUBNET_USER.148 $OSD_NODE2
-run_instance OSD_NODE3ID ami-accff2b1 t2.micro ceph-lab $SG_CLUID $SUB_CLU_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.133 $OSD_NODE3
+run_instance CEPH_ADMINID $AMI t2.small ceph-lab $SG_EXTID $SUB_EXT_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.4 $CEPH_ADMIN 1 
+run_instance DEVSTACKID $AMI t2.micro ceph-lab $SG_APPID $SUB_APP_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.36 $DEVSTACK 0
+run_instance RADOSGWID $AMI t2.micro ceph-lab $SG_RGWID $SUB_RGW_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.68 $RADOSGW 0
+run_instance MON1ID $AMI t2.micro ceph-lab $SG_PUBID $SUB_PUB_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.100 $MON1 0
+run_instance OSD_NODE1ID $AMI t2.micro ceph-lab $SG_CLUID $SUB_CLU_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.132 $OSD_NODE1 0
+run_instance OSD_NODE2ID $AMI t2.micro ceph-lab $SG_CLUID $SUB_CLU_BID 10.$LAB_SUBNET.$LAB_SUBNET_USER.148 $OSD_NODE2 0
+run_instance OSD_NODE3ID $AMI t2.micro ceph-lab $SG_CLUID $SUB_CLU_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.133 $OSD_NODE3 0
 
 disable_source_dest_check $CEPH_ADMINID
 
-create_volume OSD_NODE1_XVDBID 8 $AZ_A gp2 $OSD_NODE1-xvdb
-create_volume OSD_NODE1_XVDCID 8 $AZ_A gp2 $OSD_NODE1-xvdc
-create_volume OSD_NODE1_XVDDID 8 $AZ_A gp2 $OSD_NODE1-xvdd
-create_volume OSD_NODE2_XVDBID 8 $AZ_B gp2 $OSD_NODE2-xvdb
-create_volume OSD_NODE2_XVDCID 8 $AZ_B gp2 $OSD_NODE2-xvdc
-create_volume OSD_NODE2_XVDDID 8 $AZ_B gp2 $OSD_NODE2-xvdd
-create_volume OSD_NODE3_XVDBID 8 $AZ_A gp2 $OSD_NODE3-xvdb
-create_volume OSD_NODE3_XVDCID 8 $AZ_A gp2 $OSD_NODE3-xvdc
-create_volume OSD_NODE3_XVDDID 8 $AZ_A gp2 $OSD_NODE3-xvdd
+create_volume OSD_NODE1_XVDBID $DEVICE_SIZE $AZ_A gp2 $OSD_NODE1-xvdb
+create_volume OSD_NODE1_XVDCID $DEVICE_SIZE $AZ_A gp2 $OSD_NODE1-xvdc
+create_volume OSD_NODE1_XVDDID $DEVICE_SIZE $AZ_A gp2 $OSD_NODE1-xvdd
+create_volume OSD_NODE2_XVDBID $DEVICE_SIZE $AZ_B gp2 $OSD_NODE2-xvdb
+create_volume OSD_NODE2_XVDCID $DEVICE_SIZE $AZ_B gp2 $OSD_NODE2-xvdc
+create_volume OSD_NODE2_XVDDID $DEVICE_SIZE $AZ_B gp2 $OSD_NODE2-xvdd
+create_volume OSD_NODE3_XVDBID $DEVICE_SIZE $AZ_A gp2 $OSD_NODE3-xvdb
+create_volume OSD_NODE3_XVDCID $DEVICE_SIZE $AZ_A gp2 $OSD_NODE3-xvdc
+create_volume OSD_NODE3_XVDDID $DEVICE_SIZE $AZ_A gp2 $OSD_NODE3-xvdd
 
 # Create route tables
 create_route_table ROUTETABLE_EXTID $ROUTETABLE_EXT
@@ -161,7 +164,7 @@ associate_route_table $ROUTETABLE_EXTID $SUB_EXT_BID
 
 # Make Sure Ceph Admin is the default gateway for all subnets (NAT)
 create_route_table ROUTETABLE_INTID $ROUTETABLE_INT
-CEPH_ADMIN_ENIID=`aws ec2 describe-instances --instance-id $ceph_admin --output text --query Reservations[*].Instances[*].NetworkInterfaces[*].NetworkInterfaceId`
+CEPH_ADMIN_ENIID=`aws ec2 describe-instances --instance-id $CEPH_ADMINID --output text --query Reservations[*].Instances[*].NetworkInterfaces[*].NetworkInterfaceId`
 aws ec2 create-route --route-table-id $ROUTETABLE_INTID --destination-cidr-block 0.0.0.0/0 --network-interface-id $CEPH_ADMIN_ENIID
 associate_route_table $ROUTETABLE_INTID $SUB_APP_AID
 associate_route_table $ROUTETABLE_INTID $SUB_APP_BID
@@ -196,6 +199,15 @@ attach_volume $OSD_NODE3ID $OSD_NODE3_XVDCID /dev/xvdc
 while [ `aws ec2 describe-volumes --volume-id $OSD_NODE3_XVDDID --output text --query Volumes[*].State` != "available" ] ; do  echo "wait" ; done
 attach_volume $OSD_NODE3ID $OSD_NODE3_XVDDID /dev/xvdd
 
+get_public_ip_eni CEPH_ADMIN_PUBLICIP $CEPH_ADMIN_ENIID
+
+ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update && sudo apt-get install git && git clone https://github.com/Tfindelkind/ceph-on-AWS 
+
+ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP cd ceph-on-AWS && echo "LAB_SUBNET=$LAB_SUBNET" >> lab.conf && echo "LAB_SUBNET_USER=$LAB_SUBNET_USER" >> lab.conf
+
+echo "ceph-admin IP: $CEPH_ADMIN_PUBLICIP"
+echo "use: ssh -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP to connect"
+echo "Then start ceph install with: ./setup_ceph-admin.sh $AMI"
 
 
 
