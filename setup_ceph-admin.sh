@@ -43,6 +43,8 @@ sudo dpkg --install webmin_1.660_all.deb
 sudo /usr/share/webmin/changepass.pl /etc/webmin root ceph
 
 #config DHCP for local DNS
+sed -i.bak s/LS./$LAB_SUBNET./g ./config-files/dhclient.conf
+sed -i.bak s/LU./$LAB_SUBNET_USER./g ./config-files/dhclient.conf
 sudo cp ./config-files/dhclient.conf /etc/dhcp/
 sudo dhclient -r; sudo dhclient
 
