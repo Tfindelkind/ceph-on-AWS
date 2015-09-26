@@ -69,10 +69,10 @@ ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.148 >> ~/.ssh/known_hosts
 ssh-keyscan -H osd-node3 >> ~/.ssh/known_hosts
 ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.133 >> ~/.ssh/known_hosts
 
-./prepare_node devstack
-./prepare_node radosgw
-./prepare_node mon1
-./prepare_node osd-node1
-./prepare_node osd-node2
-./prepare_node osd-node3
-./prepare_node ceph-admin
+./prepare_node.sh devstack
+./prepare_node.sh radosgw
+./prepare_node.sh mon1
+./prepare_node.sh osd-node1
+./prepare_node.sh osd-node2
+./prepare_node.sh osd-node3
+./prepare_node.sh ceph-admin
