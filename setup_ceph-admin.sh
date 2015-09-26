@@ -16,7 +16,7 @@ echo ubuntu:ceph | sudo /usr/sbin/chpasswd
 sudo cp ./config-files/sysctl.conf /etc/sysctl.conf 
 sudo apt-get update
 sudo apt-get install -y iptables-persistent
-sudo iptables -t nat -A POSTROUTING -s 10.$1.0.0/16 -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -s 10.$LAB_SUBNET.0.0/16 -j MASQUERADE
 sudo /bin/su -c "iptables-save > /etc/iptables/rules.v4"
 
 # install BIND server and use lab config 
@@ -24,13 +24,13 @@ sudo apt-get install -y bind9
 sudo cp ./config-files/named.conf.local /etc/bind/named.conf.local
 sudo cp ./config-files/named.conf.options /etc/bind/named.conf.options
 # prepare bind files
-sed -i.bak s/LS./$LAB_SUBNET./g 10.100.rev 
-sed -i.bak s/LU./$LAB_SUBNET_USER./g 10.100.rev
-sed -i.bak s/LS./$LAB_SUBNET./g lab.hosts
-sed -i.bak s/LU./$LAB_SUBNET_USER./g lab.hosts
+sed -i.bak s/LS./$LAB_SUBNET./g ./config-files/10.100.rev 
+sed -i.bak s/LU./$LAB_SUBNET_USER./g ./config-files/10.100.rev
+sed -i.bak s/LS./$LAB_SUBNET./g ./config-files/lab.hosts
+sed -i.bak s/LU./$LAB_SUBNET_USER./g ./config-files/lab.hosts
 
-sudo cp 10.100.rev /var/lib/bind/10.$LAB_SUBNET.rev
-sudo cp lab.hosts /var/lib/bind/lab.hosts 
+sudo cp ./config-files/10.100.rev /var/lib/bind/10.$LAB_SUBNET.rev
+sudo cp ./config-files/lab.hosts /var/lib/bind/lab.hosts 
 sudo service bind9 restart
 
 # install webmin for easy changes
