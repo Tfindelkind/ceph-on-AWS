@@ -3,6 +3,9 @@ source lab.conf
 # download all needed config files
 wget http://tfindelkind.com/wp-content/uploads/2015/09/sndk-ifos-1.0.0.09.build2c.tar.gz 
 
+#change file permission which git does not preserver
+chmod 0400 ceph-lab.pem
+
 # change hostname
 sudo /bin/su -c "echo ceph-admin > /etc/hostname"
 sudo hostname ceph-admin
