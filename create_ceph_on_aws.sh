@@ -201,9 +201,12 @@ attach_volume $OSD_NODE3ID $OSD_NODE3_XVDDID /dev/xvdd
 
 get_public_ip_eni CEPH_ADMIN_PUBLICIP $CEPH_ADMIN_ENIID
 
-ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update && sudo apt-get install git && git clone https://github.com/Tfindelkind/ceph-on-AWS 
+ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update 
+ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get install -y git 
+ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP git clone https://github.com/Tfindelkind/ceph-on-AWS 
 
-ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP cd ceph-on-AWS && echo "LAB_SUBNET=$LAB_SUBNET" >> lab.conf && echo "LAB_SUBNET_USER=$LAB_SUBNET_USER" >> lab.conf
+ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET=$LAB_SUBNET" >> ./ceph-on-AWS/lab.conf"
+ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET_USER=$LAB_SUBNET_USER" >> ./ceph-on-AWS/lab.conf"
 
 echo "ceph-admin IP: $CEPH_ADMIN_PUBLICIP"
 echo "use: ssh -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP to connect"

@@ -277,7 +277,7 @@ function get_public_ip_eni ()
 #$1 = Return public IP address of ENI
 #$2 = ENI ID 
 {
-	local __PublicIp
+	local __PublicIp=$1
 	local PublicIp
 	
 	PublicIp=`aws ec2 describe-network-interfaces --network-interface-ids $2 --output text --query "NetworkInterfaces[].PrivateIpAddresses[].Association.PublicIp"`

@@ -1,19 +1,11 @@
+source lab.conf
+
 # download all needed config files
-
 wget http://tfindelkind.com/wp-content/uploads/2015/09/sndk-ifos-1.0.0.09.build2c.tar.gz 
-
-cd ceph_on_AWS
-
-#change file permissions
-sudo chmod 600 ceph-lab.pem
-sudo chmod 770 sshc
-sudo chmod 770 prepare_node.sh
-sudo chmod 770 install_calamari.sh
 
 # change hostname
 sudo /bin/su -c "echo ceph-admin > /etc/hostname"
 sudo hostname ceph-admin
-
 
 # enable password ssh access
 sudo cp ./config-files/sshd_config /etc/ssh/sshd_config
@@ -32,10 +24,12 @@ sudo apt-get install -y bind9
 sudo cp ./config-files/named.conf.local /etc/bind/named.conf.local
 sudo cp ./config-files/named.conf.options /etc/bind/named.conf.options
 # prepare bind files
-sed -i.bak s/LS./$LAB_SUBNET./g 10.100.rev && sed -i.bak s/LU./$LAB_SUBNET_USER./g 10.100.rev
-sed -i.bak s/LS./$LAB_SUBNET./g lab.hosts && sed -i.bak s/LU./$LAB_SUBNET_USER./g lab.hosts
+sed -i.bak s/LS./$LAB_SUBNET./g 10.100.rev 
+sed -i.bak s/LU./$LAB_SUBNET_USER./g 10.100.rev
+sed -i.bak s/LS./$LAB_SUBNET./g lab.hosts
+sed -i.bak s/LU./$LAB_SUBNET_USER./g lab.hosts
 
-sudo cp 10.100.rev /var/lib/bind/10.100.rev
+sudo cp 10.100.rev /var/lib/bind/10.$LAB_SUBNET.rev
 sudo cp lab.hosts /var/lib/bind/lab.hosts 
 sudo service bind9 restart
 
@@ -46,29 +40,29 @@ sudo dpkg --install webmin_1.660_all.deb
 sudo /usr/share/webmin/changepass.pl /etc/webmin root ceph
 
 #config DHCP for local DNS
-sudo cp dhclient.conf /etc/dhcp/
+sudo cp ./config-files/dhclient.conf /etc/dhcp/
 sudo dhclient -r; sudo dhclient
 
 #prepare IFOS
 tar -xvzf sndk-ifos-1.0.0.09.build2c.tar.gz
-cp install.conf sndk-ifos-1.0.0.09.build2c
+cp ./config-files/install.conf sndk-ifos-1.0.0.09.build2c
 
 #prepare other hosts
 
 ssh-keyscan -H ceph-admin >> ~/.ssh/known_hosts
-ssh-keyscan -H 10.$1.0.10 >> ~/.ssh/known_hosts
+ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.4 >> ~/.ssh/known_hosts
 ssh-keyscan -H devstack >> ~/.ssh/known_hosts
-ssh-keyscan -H 10.$1.2.10 >> ~/.ssh/known_hosts
+ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.36 >> ~/.ssh/known_hosts
 ssh-keyscan -H radosgw >> ~/.ssh/known_hosts
-ssh-keyscan -H 10.$1.4.10 >> ~/.ssh/known_hosts
+ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.68 >> ~/.ssh/known_hosts
 ssh-keyscan -H mon1 >> ~/.ssh/known_hosts
-ssh-keyscan -H 10.$1.6.10 >> ~/.ssh/known_hosts
+ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.100 >> ~/.ssh/known_hosts
 ssh-keyscan -H osd-node1 >> ~/.ssh/known_hosts
-ssh-keyscan -H 10.$1.8.10 >> ~/.ssh/known_hosts
+ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.132 >> ~/.ssh/known_hosts
 ssh-keyscan -H osd-node2 >> ~/.ssh/known_hosts
-ssh-keyscan -H 10.$1.9.10 >> ~/.ssh/known_hosts
+ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.148 >> ~/.ssh/known_hosts
 ssh-keyscan -H osd-node3 >> ~/.ssh/known_hosts
-ssh-keyscan -H 10.$1.8.11 >> ~/.ssh/known_hosts
+ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.133 >> ~/.ssh/known_hosts
 
 ./prepare_node devstack
 ./prepare_node radosgw
