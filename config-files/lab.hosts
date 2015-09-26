@@ -6,14 +6,14 @@ lab.	IN	SOA	ceph-admin. admin.ceph-admin. (
 			604800
 			38400 )
 lab.	IN	NS	ceph-admin.
-ceph-admin.lab.	IN	A	10.100.0.4
-devstack.lab.	IN	A	10.100.2.36
-radosgw.lab.	IN	A	10.100.4.68
-mon1.lab.	IN	A	10.100.6.100
-mon2.lab.	IN	A	10.100.7.116
-mon3.lab.	IN	A	10.100.6.101
-osd-node1.lab.	IN	A	10.100.8.132
-osd-node2.lab.	IN	A	10.100.9.148
-osd-node3.lab.	IN	A	10.100.8.133
-osd-node4.lab.	IN	A	10.100.9.149
-osd-node5.lab.	IN	A	10.100.8.134
+ceph-admin.lab.	IN	A	10.LS.LU.4
+devstack.lab.	IN	A	10.LS.LU.36
+radosgw.lab.	IN	A	10.LS.LU.68
+mon1.lab.	IN	A	10.LS.LU.100
+mon2.lab.	IN	A	10.LS.LU.116
+mon3.lab.	IN	A	10.LS.LU.101
+osd-node1.lab.	IN	A	10.LS.LU.132
+osd-node2.lab.	IN	A	10.LS.LU.148
+osd-node3.lab.	IN	A	10.LS.LU.133
+osd-node4.lab.	IN	A	10.LS.LU.149
+osd-node5.lab.	IN	A	10.LS.LU.134

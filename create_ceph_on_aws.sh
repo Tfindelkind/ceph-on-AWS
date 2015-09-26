@@ -201,6 +201,15 @@ attach_volume $OSD_NODE3ID $OSD_NODE3_XVDDID /dev/xvdd
 
 get_public_ip_eni CEPH_ADMIN_PUBLICIP $CEPH_ADMIN_ENIID
 
+# wait till ssh is ready to go
+SSH_EXIT_STATUS=255
+while [[ $SSH_EXIT_STATUS -eq 255 ]];do
+    ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP echo "ping ssh"
+    SSH_EXIT_STATUS=$?
+done
+
+ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update
+
 ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update 
 ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get install -y git 
 ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP git clone https://github.com/Tfindelkind/ceph-on-AWS 
