@@ -4,41 +4,12 @@
 # 
 
 # Import functions
+source ./scripts/config.sh
 source ./scripts/miscellaneous_functions.sh
 source ./scripts/AWS_functions.sh 
 
-#global defaults
-VPC_NAME="vpc-ceph-lab"
-AZ_A="eu-central-1a"
-AZ_B="eu-central-1b"
-LAB_SUBNET=100
-LAB_SUBNET_USER=0
-
-SUB_EXT_A="sub_ext_a"
-SUB_EXT_B="sub_ext_b"
-SUB_APP_A="sub_app_a"
-SUB_APP_B="sub_app_b"
-SUB_RGW_A="sub_rgw_a"
-SUB_RGW_B="sub_rgw_b"
-SUB_PUB_A="sub_pub_a"
-SUB_PUB_B="sub_pub_b"
-SUB_CLU_A="sub_clu_a"
-SUB_CLU_B="sub_clu_b"
-
-SG_EXT="sg_ext"
-SG_EXT_DESC=$SG_EXT"_desc"
-SG_APP="sg_app"
-SG_APP_DESC=$SG_APP"_desc"
-SG_RGW="sg_rgw"
-SG_RGW_DESC=$SG_RGW"_desc"
-SG_PUB="sg_pub"
-SG_PUB_DESC=$SG_PUB"_desc"
-SG_CLU="sg_clu"
-SG_CLU_DESC=$SG_CLU"_desc"
-
-
+#Parse input parameters
 parse_parameters "$@"
-
 
 #Global variables
 VPCID=0
@@ -47,6 +18,14 @@ IGWID=0
 IGW_EXISTS=0
 
 MAINROUTETABLEID=0
+
+CEPH_ADMIN="ceph-admin-$LAB_SUBNET_USER"
+DEVSTACK="devstack-$LAB_SUBNET_USER"
+RADOSGW="radosgw-$LAB_SUBNET_USER"
+MON1="mon1-$LAB_SUBNET_USER"
+OSD_NODE1="osd-node1-$LAB_SUBNET_USER"
+OSD_NODE2="osd-node2-$LAB_SUBNET_USER"
+OSD_NODE3="osd-node3-$LAB_SUBNET_USER"
 
 SUB_EXT_AID=0
 SUB_EXT_A_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.2/28"
@@ -83,6 +62,16 @@ OSD_NODE1ID=0
 OSD_NODE2ID=0
 OSD_NODE3ID=0
 
+OSD_NODE1_XVDBID=0
+OSD_NODE1_XVDCID=0
+OSD_NODE1_XVDDID=0
+OSD_NODE2_XVDBID=0
+OSD_NODE2_XVDCID=0
+OSD_NODE2_XVDDID=0
+OSD_NODE3_XVDBID=0
+OSD_NODE3_XVDCID=0
+OSD_NODE3_XVDDID=0
+
 ########################################################
 # Main
 
@@ -105,6 +94,16 @@ while [ `aws ec2 describe-instances --output=text --instance-ids $MON1ID --query
 while [ `aws ec2 describe-instances --output=text --instance-ids $RADOSGWID --query Reservations[*].Instances[*].State.Name` != "terminated" ]; do echo "Wait for terminating OSD_NODE3ID"; done
 while [ `aws ec2 describe-instances --output=text --instance-ids $DEVSTACKID --query Reservations[*].Instances[*].State.Name` != "terminated" ]; do echo "Wait for terminating OSD_NODE3ID"; done
 while [ `aws ec2 describe-instances --output=text --instance-ids $CEPH_ADMINID --query Reservations[*].Instances[*].State.Name` != "terminated" ]; do echo "Wait for terminating OSD_NODE3ID"; done
+
+delete_volume_byname $AZ_A $OSD_NODE1-xvdb
+delete_volume_byname $AZ_A $OSD_NODE1-xvdc
+delete_volume_byname $AZ_A $OSD_NODE1-xvdd
+delete_volume_byname $AZ_B $OSD_NODE2-xvdb
+delete_volume_byname $AZ_B $OSD_NODE2-xvdc
+delete_volume_byname $AZ_B $OSD_NODE2-xvdd
+delete_volume_byname $AZ_A $OSD_NODE3-xvdb
+delete_volume_byname $AZ_A $OSD_NODE3-xvdc
+delete_volume_byname $AZ_A $OSD_NODE3-xvdd
 
 delete_security_group_byname $SG_EXT
 delete_security_group_byname $SG_APP

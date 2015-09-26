@@ -52,7 +52,7 @@ function attach_igw () {
 function get_main_route_table () {
 	
 	MAINROUTETABLEID=`aws ec2 describe-route-tables --output=text --filters Name=vpc-id,Values=$VPCID Name=association.main,Values=true --query 'RouteTables[*].Associations[*].RouteTableId'`
-	aws ec2 create-tags --resources $MAINROUTETABLEID --tags "Key=Name,Value=mrt-$LAB_NAME" 
+	aws ec2 create-tags --resources $MAINROUTETABLEID --tags "Key=Name,Value=mrt-$VPC_NAME" 
 	echo "Main route table: $MAINROUTETABLEID added to: $VPCID"
 	
 	
@@ -147,6 +147,27 @@ function attach_volume () {
 
 }
 
+function create_route_table () {
+#$1 = Return Route Table ID
+#$2 = Route Table Name
+
+	local __RouteTableId=$1
+	local RouteTableId
+	
+	RouteTableId=`aws ec2 create-route-table --vpc-id=$VPCID --query 'RouteTable.RouteTableId' --output text`
+	aws ec2 create-tags --resources $RouteTableId --tags "Key=Name,Value=$2"
+	
+	eval $__RouteTableId="'$RouteTableId'"
+}
+
+function associate_route_table () {
+#$1 = Route Table ID
+#$2 = Subnet ID
+	
+	aws ec2 associate-route-table --route-table-id $1 --subnet-id $2
+	
+}
+
 
 
 function disable_source_dest_check () {
@@ -213,3 +234,10 @@ function delete_volume_byname () {
 	echo "Volume $2 with ID: $VolumeId deleted"
 	
 }
+
+function delete_route_table_byname () {
+	
+	
+	
+}	
+	

@@ -4,38 +4,9 @@
 # 
 
 # Import functions
+source ./scripts/config.sh
 source ./scripts/miscellaneous_functions.sh
 source ./scripts/AWS_functions.sh 
-
-#global defaults
-VPC_NAME="vpc-ceph-lab"
-AZ_A="eu-central-1a"
-AZ_B="eu-central-1b"
-LAB_SUBNET=100
-LAB_SUBNET_USER=0
-
-SUB_EXT_A="sub_ext_a"
-SUB_EXT_B="sub_ext_b"
-SUB_APP_A="sub_app_a"
-SUB_APP_B="sub_app_b"
-SUB_RGW_A="sub_rgw_a"
-SUB_RGW_B="sub_rgw_b"
-SUB_PUB_A="sub_pub_a"
-SUB_PUB_B="sub_pub_b"
-SUB_CLU_A="sub_clu_a"
-SUB_CLU_B="sub_clu_b"
-
-SG_EXT="sg_ext"
-SG_EXT_DESC=$SG_EXT"_desc"
-SG_APP="sg_app"
-SG_APP_DESC=$SG_APP"_desc"
-SG_RGW="sg_rgw"
-SG_RGW_DESC=$SG_RGW"_desc"
-SG_PUB="sg_pub"
-SG_PUB_DESC=$SG_PUB"_desc"
-SG_CLU="sg_clu"
-SG_CLU_DESC=$SG_CLU"_desc"
-
 
 #Parse input parameters
 parse_parameters "$@"
@@ -47,6 +18,12 @@ IGWID=0
 IGW_EXISTS=0
 
 MAINROUTETABLEID=0
+ROUTETABLE_INTID=0
+ROUTETABLE_EXTID=0
+
+ROUTETABLE_INT="rt-int-$LAB_SUBNET_USER"
+ROUTETABLE_EXT="rt-ext-$LAB_SUBNET_USER"
+
 
 CEPH_ADMIN="ceph-admin-$LAB_SUBNET_USER"
 DEVSTACK="devstack-$LAB_SUBNET_USER"
@@ -92,6 +69,8 @@ OSD_NODE1ID=0
 OSD_NODE2ID=0
 OSD_NODE3ID=0
 
+CEPH_ADMIN_ENIID=0
+
 OSD_NODE1_XVDBID=0
 OSD_NODE1_XVDCID=0
 OSD_NODE1_XVDDID=0
@@ -101,6 +80,7 @@ OSD_NODE2_XVDDID=0
 OSD_NODE3_XVDBID=0
 OSD_NODE3_XVDCID=0
 OSD_NODE3_XVDDID=0
+
 
 
 ########################################################
@@ -173,31 +153,28 @@ create_volume OSD_NODE3_XVDCID 8 $AZ_A gp2 $OSD_NODE3-xvdc
 create_volume OSD_NODE3_XVDDID 8 $AZ_A gp2 $OSD_NODE3-xvdd
 
 # Create route tables
-#route_table_ext=`aws ec2 create-route-table --vpc-id=$vpc --query 'RouteTable.RouteTableId' --output text`
-#aws ec2 create-route --route-table-id $route_table_ext --destination-cidr-block 0.0.0.0/0 --gateway-id $igw
+create_route_table ROUTETABLE_EXTID $ROUTETABLE_EXT
+aws ec2 create-route --route-table-id $ROUTETABLE_EXTID --destination-cidr-block 0.0.0.0/0 --gateway-id $IGWID
+associate_route_table $ROUTETABLE_EXTID $SUB_EXT_AID
+associate_route_table $ROUTETABLE_EXTID $SUB_EXT_BID
 
-#aws ec2 associate-route-table --route-table-id $route_table_ext --subnet-id $sub_ext_euc1a
-#aws ec2 associate-route-table --route-table-id $route_table_ext --subnet-id $sub_ext_euc1b
 
-
-#route_table_int=`aws ec2 create-route-table --vpc-id=$vpc --query 'RouteTable.RouteTableId' --output text`
-#ceph_admin_eni=`aws ec2 describe-instances --instance-id $ceph_admin --output text --query Reservations[*].Instances[*].NetworkInterfaces[*].NetworkInterfaceId`
-#aws ec2 create-route --route-table-id $route_table_int --destination-cidr-block 0.0.0.0/0 --network-interface-id $ceph_admin_eni
-
-#aws ec2 associate-route-table --route-table-id $route_table_int --subnet-id $sub_app_euc1a
-#aws ec2 associate-route-table --route-table-id $route_table_int --subnet-id $sub_app_euc1b
-#aws ec2 associate-route-table --route-table-id $route_table_int --subnet-id $sub_rgw_euc1a
-#aws ec2 associate-route-table --route-table-id $route_table_int --subnet-id $sub_rgw_euc1b
-#aws ec2 associate-route-table --route-table-id $route_table_int --subnet-id $sub_pub_euc1a
-#aws ec2 associate-route-table --route-table-id $route_table_int --subnet-id $sub_pub_euc1b
-#aws ec2 associate-route-table --route-table-id $route_table_int --subnet-id $sub_clu_euc1a
-#aws ec2 associate-route-table --route-table-id $route_table_int --subnet-id $sub_clu_euc1b
-
+# Make Sure Ceph Admin is the default gateway for all subnets (NAT)
+create_route_table ROUTETABLE_INTID $ROUTETABLE_INT
+CEPH_ADMIN_ENIID=`aws ec2 describe-instances --instance-id $ceph_admin --output text --query Reservations[*].Instances[*].NetworkInterfaces[*].NetworkInterfaceId`
+aws ec2 create-route --route-table-id $ROUTETABLE_INTID --destination-cidr-block 0.0.0.0/0 --network-interface-id $CEPH_ADMIN_ENIID
+associate_route_table $ROUTETABLE_INTID $SUB_APP_AID
+associate_route_table $ROUTETABLE_INTID $SUB_APP_BID
+associate_route_table $ROUTETABLE_INTID $SUB_RGW_AID
+associate_route_table $ROUTETABLE_INTID $SUB_RGW_BID
+associate_route_table $ROUTETABLE_INTID $SUB_PUB_AID
+associate_route_table $ROUTETABLE_INTID $SUB_PUB_BID
+associate_route_table $ROUTETABLE_INTID $SUB_CLU_AID
+associate_route_table $ROUTETABLE_INTID $SUB_CLU_BID
 
 while [ `aws ec2 describe-instances --output=text --instance-ids $OSD_NODE1ID --query Reservations[*].Instances[*].State.Name` != "running" ]; do echo "Wait for startup osd-node1-$LAB_SUBNET_USER"; done
 while [ `aws ec2 describe-instances --output=text --instance-ids $OSD_NODE2ID --query Reservations[*].Instances[*].State.Name` != "running" ]; do echo "Wait for startup osd-node2-$LAB_SUBNET_USER"; done
 while [ `aws ec2 describe-instances --output=text --instance-ids $OSD_NODE3ID --query Reservations[*].Instances[*].State.Name` != "running" ]; do echo "Wait for startup osd-node3-$LAB_SUBNET_USER"; done
-
 
 
 while [ `aws ec2 describe-volumes --volume-id $OSD_NODE1_XVDBID --output text --query Volumes[*].State` != "available" ] ; do  echo "wait" ; done
