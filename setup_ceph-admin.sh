@@ -24,6 +24,7 @@ sudo apt-get install -y bind9
 
 # prepare bind files
 sed -i.bak s/LS./$LAB_SUBNET./g ./config-files/named.conf.local
+sed -i.bak s/LU./$LAB_SUBNET_USER./g ./config-files/named.conf.local
 sed -i.bak s/LS./$LAB_SUBNET./g ./config-files/10.100.rev 
 sed -i.bak s/LU./$LAB_SUBNET_USER./g ./config-files/10.100.rev
 sed -i.bak s/LS./$LAB_SUBNET./g ./config-files/lab.hosts
