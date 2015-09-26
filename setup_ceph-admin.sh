@@ -21,14 +21,16 @@ sudo /bin/su -c "iptables-save > /etc/iptables/rules.v4"
 
 # install BIND server and use lab config 
 sudo apt-get install -y bind9
-sudo cp ./config-files/named.conf.local /etc/bind/named.conf.local
-sudo cp ./config-files/named.conf.options /etc/bind/named.conf.options
+
 # prepare bind files
+sed -i.bak s/LS./$LAB_SUBNET./g ./config-files/named.conf.local
 sed -i.bak s/LS./$LAB_SUBNET./g ./config-files/10.100.rev 
 sed -i.bak s/LU./$LAB_SUBNET_USER./g ./config-files/10.100.rev
 sed -i.bak s/LS./$LAB_SUBNET./g ./config-files/lab.hosts
 sed -i.bak s/LU./$LAB_SUBNET_USER./g ./config-files/lab.hosts
 
+sudo cp ./config-files/named.conf.local /etc/bind/named.conf.local
+sudo cp ./config-files/named.conf.options /etc/bind/named.conf.options
 sudo cp ./config-files/10.100.rev /var/lib/bind/10.$LAB_SUBNET.rev
 sudo cp ./config-files/lab.hosts /var/lib/bind/lab.hosts 
 sudo service bind9 restart

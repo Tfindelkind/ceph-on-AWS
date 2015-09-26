@@ -10,7 +10,7 @@ zone "lab" {
 	type master;
 	file "/var/lib/bind/lab.hosts";
 	};
-zone "100.10.in-addr.arpa" {
+zone "LS.10.in-addr.arpa" {
 	type master;
-	file "/var/lib/bind/10.100.rev";
+	file "/var/lib/bind/10.LS.rev";
 	};
