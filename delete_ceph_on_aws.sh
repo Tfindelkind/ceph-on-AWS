@@ -134,7 +134,13 @@ delete_subnet_byname  $SUB_CLU_B
 delete_route_table_byname $ROUTETABLE_INT
 delete_route_table_byname $ROUTETABLE_EXT
 
-delete_key_pair $STUDENT
+detach_read_policy
+
+delete_login_profile
+
+delete_user
+
+delete_key_pair 
 
 detach_igw
 

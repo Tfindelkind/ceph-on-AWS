@@ -25,18 +25,10 @@ git clone https://github.com/Tfindelkind/ceph-on-AWS
 
 #How-To run
 
-The setup is seperated in four parts 
-
-	1. User and private keys creation
-	
-		Because this setup can create up to ~250 student environments in one VPC there need to be possibility to handle the access for the students/users
-		There are two supported modes:
-			1.1	One user who is admin and student in one person (default)
-			
-			1.2 One admin user and several student user created in IAM with access to their environments
+The setup is seperated in three parts 
 
 	
-	2. Creation of the AWS environment
+	1. Creation of the AWS environment
 		The following script will be run by the admin user to create a lab environment including a VPC called: vpc-ceph-lab ands an IGW
 		
 		./create_ceph_on_AWS.sh
@@ -46,16 +38,16 @@ The setup is seperated in four parts
 		(This creates a lab with Subnet 10.30.10.XXX in the region Ireland (eu-west-1) with AZ eu-west-1a and eu-west-1b  in VPC with the name tag my-vpc
 		 Make sure to set the default region with "aws configure")
 		
-	3. Setup ceph-admin hosts
+	2. Setup ceph-admin hosts
 		The following script will be run by the student/user inside the ceph-admin instances to prepare the whole environment for ceph
 		
 		./setup_ceph-admin.sh 
 		
-	4. 	The following script will be run by the student/user inside the ceph-admin instances to deploy and create the ceph cluster
+	3. 	The following script will be run by the student/user inside the ceph-admin instances to deploy and create the ceph cluster
 		
 		./setup_ceph.sh
 		
-	5. Setup Calamari (optional)	
+	4. Setup Calamari (optional)	
 		The following script will be run by the student/user inside the ceph-admin instances to install calamari for this environment
 		
 		./install_calamari.sh

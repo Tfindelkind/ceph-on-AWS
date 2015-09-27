@@ -4,7 +4,7 @@ source lab.conf
 wget http://tfindelkind.com/wp-content/uploads/2015/09/sndk-ifos-1.1.0.03.tar.gz
 
 #change file permission which git does not preserver
-chmod 0400 ceph-lab.pem
+chmod 0400 $STUDENT.pem
 
 # change hostname
 sudo /bin/su -c "echo ceph-admin > /etc/hostname"

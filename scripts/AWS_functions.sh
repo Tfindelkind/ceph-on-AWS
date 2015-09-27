@@ -13,6 +13,17 @@ function get_igw () {
 	IGWID=`aws ec2 describe-internet-gateways --output text --filter Name=attachment.vpc-id,Values=$VPCID --query 'InternetGateways[*].InternetGatewayId'`
 		
 }
+
+
+function get_account_id () {
+
+	
+	user_arn=`aws iam get-user --output text --query "User.Arn"`
+	IFS=': ' read -a array <<< "$user_arn"
+	ACCOUNTID="${array[4]}"
+	
+	
+}
  
 function create_vpc () {  
 		
@@ -177,11 +188,6 @@ function associate_route_table () {
 	
 }
 
-function create_user () {
-	
-	aws iam create-user --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER
-	
-}
 
 #function get_instance_arn_byname () 
 #$1 = Return ARN for instance
@@ -211,46 +217,58 @@ function create_user () {
 
 function attach_read_policy () {
 	
-	aws iam attach-user-policy --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+	aws iam attach-user-policy --user-name $STUDENT --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
 }
 
 function detach_read_policy () {
 	
-	aws iam detach-user-policy --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+	aws iam detach-user-policy --user-name $STUDENT --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
 }
 
 function create_key_pair () {
-#$1 =  Key name
 	
-	aws ec2 create-key-pair --key-name $1 --output text --query 'KeyMaterial' > $1.pem
+	aws ec2 create-key-pair --key-name $STUDENT --output text --query 'KeyMaterial' > $STUDENT.pem
 	
-	echo "Keypair created and downloaded to $1.pem"
+	echo "Keypair created and downloaded to $STUDENT.pem"
 }
 
 function delete_key_pair () {
-#$1 =  Key name
 	
-	aws ec2 delete-key-pair --key-name $1
+	aws ec2 delete-key-pair --key-name $STUDENT
 	
-	echo "Keypair $1.pem deleted"
+	echo "Keypair $STUDENT.pem deleted"
 }
 
 
 function create_login_profile () {
 	
-	aws iam create-login-profile --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER --password ceph
+	aws iam create-login-profile --user-name $STUDENT --password ceph
+	
+	echo "Default password set for $STUDENT"
 	
 }
 
 function delete_login_profile () {
 	
-	aws iam delete-login-profile --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER 
+	aws iam delete-login-profile --user-name $STUDENT 
+	
+	echo "Login Profile deleted for User $STUDENT"
+	
+}
+
+function create_user () {
+	
+	aws iam create-user --user-name $STUDENT
+	
+	echo "Student: $STUDENT created"
 	
 }
 
 function delete_user () {
 	
-	aws iam delete-user --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER
+	aws iam delete-user --user-name $STUDENT
+	
+	echo "Student: $STUDENT deleted"
 
 }
 

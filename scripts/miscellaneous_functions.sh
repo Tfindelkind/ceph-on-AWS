@@ -45,12 +45,10 @@ function parse_parameters () {
 	while getopts "a:b:hs:au:v" o; do 
 		case "${o}" in 
 		a) 
-			AZ_A=${OPTARG}
-			echo $AZ_A					
+			AZ_A=${OPTARG}				
 			;; 
 		b) 
 			AZ_B=${OPTARG}
-			echo $AZ_B
 			;; 
 		h) 
 			print_help 
@@ -73,11 +71,9 @@ function parse_parameters () {
 					echo "subnet for user is not valid or not between 0 and 254"
 					exit 1;
 			fi
-			echo $LAB_SUBNET_USER
 			;; 
 		v) 
 			VPC_NAME=${OPTARG}
-			echo $VPC_NAME
 			;; 
 		*) 
 			echo "Incorrect options provided" 

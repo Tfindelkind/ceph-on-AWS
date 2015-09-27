@@ -17,6 +17,7 @@ VPC_CIDR="10.$LAB_SUBNET.0.0/16"
 STUDENT="student-$LAB_SUBNET-$LAB_SUBNET_USER"
 IGWID=0
 IGW_EXISTS=0
+ACCOUNTID=0
 
 MAINROUTETABLEID=0
 ROUTETABLE_INTID=0
@@ -99,11 +100,19 @@ get_vpcid
 
 get_igw
 
+get_account_id 
+
 create_vpc 
 
 create_igw
 
-create_key_pair $STUDENT
+create_key_pair 
+
+create_user
+
+create_login_profile
+
+attach_read_policy
 
 
 if [ "$IGW_EXISTS" = false ]; then attach_igw; fi
@@ -207,6 +216,7 @@ echo "Public IP: $CEPH_ADMIN_PUBLICIP"
 
 # wait till ssh is ready to go
 chmod 0400 $STUDENT.pem
+ssh-keyscan -H $CEPH_ADMIN_PUBLICIP >> ~/.ssh/known_hosts
 SSH_EXIT_STATUS=255
 while [[ $SSH_EXIT_STATUS -eq 255 ]];do
     ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP echo "ping ssh"
@@ -218,10 +228,13 @@ ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update
 
 ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update 
 ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get install -y git 
-ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP git clone https://github.com/Tfindelkind/ceph-on-AWS 
+ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP git clone https://github.com/Tfindelkind/ceph-on-AWS
+scp -i $STUDENT.pem ./$STUDENT.pem ubuntu@$$CEPH_ADMIN_PUBLICIP:/home/ubuntu/ceph-on-AWS
 
 ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET=$LAB_SUBNET" >> ./ceph-on-AWS/lab.conf"
 ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET_USER=$LAB_SUBNET_USER" >> ./ceph-on-AWS/lab.conf"
+ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "AWSURL=https://$ACCOUNTID.signin.aws.amazon.com/console" >> ./ceph-on-AWS/lab.conf"
+ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "STUDENT=$STUDENT" >> ./ceph-on-AWS/lab.conf"
 
 echo "ceph-admin IP: $CEPH_ADMIN_PUBLICIP"
 echo ""
@@ -229,8 +242,10 @@ echo "1. Connect to ceph-admin"
 echo "2. Change directory to ceph-on-AWS" 
 echo "3. Then start ceph install with"
 echo ""
+echo "User can sign in as $STUDENT with default password at https://$ACCOUNTID.signin.aws.amazon.com/console"
+echo ""
 echo "ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP"
-echo "cd ceph_ceph-on-AWS"
+echo "cd ceph-on-AWS"
 echo "./setup_ceph-admin.sh $AMI"
 
 
