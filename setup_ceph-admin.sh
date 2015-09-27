@@ -1,7 +1,7 @@
 source lab.conf
 
 # download all needed config files
-wget http://tfindelkind.com/wp-content/uploads/2015/09/sndk-ifos-1.0.0.09.build2c.tar.gz 
+wget http://tfindelkind.com/wp-content/uploads/2015/09/sndk-ifos-1.1.0.03.tar.gz
 
 #change file permission which git does not preserver
 chmod 0400 ceph-lab.pem
@@ -52,8 +52,8 @@ sudo cp ./config-files/dhclient.conf /etc/dhcp/
 sudo dhclient -r; sudo dhclient
 
 #prepare IFOS
-tar -xvzf sndk-ifos-1.0.0.09.build2c.tar.gz
-cp ./config-files/install.conf sndk-ifos-1.0.0.09.build2c
+tar -xvzf sndk-ifos-1.1.0.03.tar.gz
+cp ./config-files/install.conf sndk-ifos-1.1.0.03
 
 #prepare other hosts
 
