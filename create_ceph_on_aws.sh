@@ -14,6 +14,7 @@ parse_parameters "$@"
 #Global variables
 VPCID=0
 VPC_CIDR="10.$LAB_SUBNET.0.0/16"
+STUDENT="student-$LAB_SUBNET-$LAB_SUBNET_USER"
 IGWID=0
 IGW_EXISTS=0
 
@@ -102,6 +103,8 @@ create_vpc
 
 create_igw
 
+create_key_pair $STUDENT
+
 
 if [ "$IGW_EXISTS" = false ]; then attach_igw; fi
 
@@ -135,13 +138,13 @@ auth_sg_ingress $SG_RGWID all all $VPC_CIDR
 auth_sg_ingress $SG_PUBID all all $VPC_CIDR
 auth_sg_ingress $SG_CLUID all all $VPC_CIDR
 
-run_instance CEPH_ADMINID $AMI t2.small ceph-lab $SG_EXTID $SUB_EXT_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.4 $CEPH_ADMIN 1 
-run_instance DEVSTACKID $AMI t2.micro ceph-lab $SG_APPID $SUB_APP_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.36 $DEVSTACK 0
-run_instance RADOSGWID $AMI t2.micro ceph-lab $SG_RGWID $SUB_RGW_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.68 $RADOSGW 0
-run_instance MON1ID $AMI t2.micro ceph-lab $SG_PUBID $SUB_PUB_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.100 $MON1 0
-run_instance OSD_NODE1ID $AMI t2.micro ceph-lab $SG_CLUID $SUB_CLU_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.132 $OSD_NODE1 0
-run_instance OSD_NODE2ID $AMI t2.micro ceph-lab $SG_CLUID $SUB_CLU_BID 10.$LAB_SUBNET.$LAB_SUBNET_USER.148 $OSD_NODE2 0
-run_instance OSD_NODE3ID $AMI t2.micro ceph-lab $SG_CLUID $SUB_CLU_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.133 $OSD_NODE3 0
+run_instance CEPH_ADMINID $AMI t2.small $STUDENT $SG_EXTID $SUB_EXT_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.4 $CEPH_ADMIN 1 
+run_instance DEVSTACKID $AMI t2.micro $STUDENT $SG_APPID $SUB_APP_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.36 $DEVSTACK 0
+run_instance RADOSGWID $AMI t2.micro $STUDENT $SG_RGWID $SUB_RGW_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.68 $RADOSGW 0
+run_instance MON1ID $AMI t2.micro $STUDENT $SG_PUBID $SUB_PUB_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.100 $MON1 0
+run_instance OSD_NODE1ID $AMI t2.micro $STUDENT $SG_CLUID $SUB_CLU_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.132 $OSD_NODE1 0
+run_instance OSD_NODE2ID $AMI t2.micro $STUDENT $SG_CLUID $SUB_CLU_BID 10.$LAB_SUBNET.$LAB_SUBNET_USER.148 $OSD_NODE2 0
+run_instance OSD_NODE3ID $AMI t2.micro $STUDENT $SG_CLUID $SUB_CLU_AID 10.$LAB_SUBNET.$LAB_SUBNET_USER.133 $OSD_NODE3 0
 
 disable_source_dest_check $CEPH_ADMINID
 
@@ -203,22 +206,22 @@ get_public_ip_eni CEPH_ADMIN_PUBLICIP $CEPH_ADMIN_ENIID
 echo "Public IP: $CEPH_ADMIN_PUBLICIP"
 
 # wait till ssh is ready to go
-chmod 0400 ceph-lab.pem
+chmod 0400 $STUDENT.pem
 SSH_EXIT_STATUS=255
 while [[ $SSH_EXIT_STATUS -eq 255 ]];do
-    ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP echo "ping ssh"
+    ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP echo "ping ssh"
     SSH_EXIT_STATUS=$?
     sleep 2
 done
 
-ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update
+ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update
 
-ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update 
-ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get install -y git 
-ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP git clone https://github.com/Tfindelkind/ceph-on-AWS 
+ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update 
+ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get install -y git 
+ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP git clone https://github.com/Tfindelkind/ceph-on-AWS 
 
-ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET=$LAB_SUBNET" >> ./ceph-on-AWS/lab.conf"
-ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET_USER=$LAB_SUBNET_USER" >> ./ceph-on-AWS/lab.conf"
+ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET=$LAB_SUBNET" >> ./ceph-on-AWS/lab.conf"
+ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET_USER=$LAB_SUBNET_USER" >> ./ceph-on-AWS/lab.conf"
 
 echo "ceph-admin IP: $CEPH_ADMIN_PUBLICIP"
 echo ""
@@ -226,7 +229,7 @@ echo "1. Connect to ceph-admin"
 echo "2. Change directory to ceph-on-AWS" 
 echo "3. Then start ceph install with"
 echo ""
-echo "ssh -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP"
+echo "ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP"
 echo "cd ceph_ceph-on-AWS"
 echo "./setup_ceph-admin.sh $AMI"
 

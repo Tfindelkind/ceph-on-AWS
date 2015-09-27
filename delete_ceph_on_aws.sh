@@ -14,6 +14,7 @@ parse_parameters "$@"
 #Global variables
 VPCID=0
 VPC_CIDR="10.$LAB_SUBNET.0.0/16"
+STUDENT="student-$LAB_SUBNET-$LAB_SUBNET_USER"
 IGWID=0
 IGW_EXISTS=0
 
@@ -133,6 +134,7 @@ delete_subnet_byname  $SUB_CLU_B
 delete_route_table_byname $ROUTETABLE_INT
 delete_route_table_byname $ROUTETABLE_EXT
 
+delete_key_pair $STUDENT
 
 detach_igw
 

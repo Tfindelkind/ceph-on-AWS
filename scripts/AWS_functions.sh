@@ -177,7 +177,82 @@ function associate_route_table () {
 	
 }
 
+function create_user () {
+	
+	aws iam create-user --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER
+	
+}
 
+#function get_instance_arn_byname () 
+#$1 = Return ARN for instance
+#$2 = instance name 
+#{
+#	local __ARN=$1
+#	local ARN
+#	
+#	user_arn=`aws iam get-user --output text --query "User.Arn"`
+#	IFS=': ' read -a array <<< "$user_arn"
+#	aws_account_id="${array[4]}"
+#	
+#	region=`aws configure get region`
+#	
+#	InstanceId=`aws ec2 describe-instances --filters $filter --output text --filters Name=tag:Name,Values=$CEPH_ADMIN Name=instance-state-name,Values=pending,running,shutting-down,stopping,stopped --query "Reservations[].Instances[].InstanceId"`	
+#		
+#	ARN="arn:aws:ec2:$region:$aws_account_id:instance/$InstanceId"
+#	echo $ARN
+#	
+#	#PublicIp=`aws ec2 describe-network-interfaces --network-interface-ids $2 --output text --query "NetworkInterfaces[].PrivateIpAddresses[].Association.PublicIp"`
+#	#arn:aws:ec2:us-east-1:123456789012:instance/i-123abc12
+#	
+#	
+#	#eval $__PublicIp="'$PublicIp'"
+#
+#}
+
+function attach_read_policy () {
+	
+	aws iam attach-user-policy --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+}
+
+function detach_read_policy () {
+	
+	aws iam detach-user-policy --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+}
+
+function create_key_pair () {
+#$1 =  Key name
+	
+	aws ec2 create-key-pair --key-name $1 --output text --query 'KeyMaterial' > $1.pem
+	
+	echo "Keypair created and downloaded to $1.pem"
+}
+
+function delete_key_pair () {
+#$1 =  Key name
+	
+	aws ec2 delete-key-pair --key-name $1
+	
+	echo "Keypair $1.pem deleted"
+}
+
+
+function create_login_profile () {
+	
+	aws iam create-login-profile --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER --password ceph
+	
+}
+
+function delete_login_profile () {
+	
+	aws iam delete-login-profile --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER 
+	
+}
+
+function delete_user () {
+	
+	aws iam delete-user --user-name student-$LAB_SUBNET-$LAB_SUBNET_USER
+
+}
 
 function disable_source_dest_check () {
 #$1 = Instance ID
