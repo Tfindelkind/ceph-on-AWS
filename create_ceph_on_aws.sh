@@ -203,6 +203,7 @@ get_public_ip_eni CEPH_ADMIN_PUBLICIP $CEPH_ADMIN_ENIID
 echo "Public IP: $CEPH_ADMIN_PUBLICIP"
 
 # wait till ssh is ready to go
+chmod 0400 ceph-lab.pem
 SSH_EXIT_STATUS=255
 while [[ $SSH_EXIT_STATUS -eq 255 ]];do
     ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP echo "ping ssh"
@@ -220,9 +221,14 @@ ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET=$LAB_SUBNET
 ssh -v -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET_USER=$LAB_SUBNET_USER" >> ./ceph-on-AWS/lab.conf"
 
 echo "ceph-admin IP: $CEPH_ADMIN_PUBLICIP"
-echo "use: ssh -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP to connect"
-echo "Then start ceph install with: ./setup_ceph-admin.sh $AMI"
-
+echo ""
+echo "1. Connect to ceph-admin"
+echo "2. Change directory to ceph-on-AWS" 
+echo "3. Then start ceph install with"
+echo ""
+echo "ssh -i ceph-lab.pem ubuntu@$CEPH_ADMIN_PUBLICIP"
+echo "cd ceph_ceph-on-AWS"
+echo "./setup_ceph-admin.sh $AMI"
 
 
 

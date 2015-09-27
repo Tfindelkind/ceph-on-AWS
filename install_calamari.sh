@@ -13,7 +13,7 @@ sudo calamari-ctl initialize --admin-username ubuntu --admin-password ceph --adm
 
 #install clients
 tar -xvzf ./AMI/ami-accff2b1/calamari-clients_1.2.2.tar.gz
-sudo cp -avr calamari-clients-1.2.2/dashboard/dist /opt/calamari/webapp/content/dashboard
-sudo cp -avr calamari-clients-1.2.2/login/dist /opt/calamari/webapp/content/login
-sudo cp -avr calamari-clients-1.2.2/manage/dist /opt/calamari/webapp/content/manage
-sudo cp -avr calamari-clients-1.2.2/admin/dist /opt/calamari/webapp/content/admin
+sudo cp -avr ./calamari-clients-1.2.2/dashboard/dist /opt/calamari/webapp/content/dashboard
+sudo cp -avr ./calamari-clients-1.2.2/login/dist /opt/calamari/webapp/content/login
+sudo cp -avr ./calamari-clients-1.2.2/manage/dist /opt/calamari/webapp/content/manage
+sudo cp -avr ./calamari-clients-1.2.2/admin/dist /opt/calamari/webapp/content/admin
