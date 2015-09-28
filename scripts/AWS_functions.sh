@@ -82,7 +82,7 @@ function get_main_route_table () {
 	
 	exit_on_error "Main route table: $MAINROUTETABLEID added to: $VPCID" "Main route table: $MAINROUTETABLEID couldn't added to: $VPCID"
 	
-	create_name_tag $MAINROUTETABLEID "mrt-$VPC_NAME" 
+	create_name_tag $MAINROUTETABLEID "mrt-$VPC_NAME_FULL" 
 	
 }
 

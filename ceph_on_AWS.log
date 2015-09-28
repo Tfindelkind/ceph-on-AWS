@@ -1,48 +1,48 @@
 ceph-on-AWS log file: 
-Set disable API termination for i-ac64926d
-Instance osd-node3-vpc-100-0 with ID: OSD_NODE3ID terminating
-Set disable API termination for i-ceb27a72
-Instance osd-node2-vpc-100-0 with ID: OSD_NODE2ID terminating
-Set disable API termination for i-6c6593ad
-Instance osd-node1-vpc-100-0 with ID: OSD_NODE1ID terminating
-Set disable API termination for i-ae64926f
-Instance mon1-vpc-100-0 with ID: MON1ID terminating
-Set disable API termination for i-50659391
-Instance radosgw-vpc-100-0 with ID: RADOSGWID terminating
-Set disable API termination for i-f3659332
-Instance devstack-vpc-100-0 with ID: DEVSTACKID terminating
-Set disable API termination for i-52659393
-Instance ceph-admin-vpc-100-0 with ID: CEPH_ADMINID terminating
-Volume osd-node1-vpc-100-0-xvdb with ID: vol-67434f8e deleted
-Volume osd-node1-vpc-100-0-xvdc with ID: vol-bf434f56 deleted
-Volume osd-node1-vpc-100-0-xvdd with ID: vol-e0434f09 deleted
-Volume osd-node2-vpc-100-0-xvdb with ID: vol-f6331e14 deleted
-Volume osd-node2-vpc-100-0-xvdc with ID: vol-e7321f05 deleted
-Volume osd-node2-vpc-100-0-xvdd with ID: vol-86331e64 deleted
-Volume osd-node3-vpc-100-0-xvdb with ID: vol-f4434f1d deleted
-Volume osd-node3-vpc-100-0-xvdc with ID: vol-b1434f58 deleted
-Volume osd-node3-vpc-100-0-xvdd with ID: vol-f7434f1e deleted
-Security Group sg_ext-vpc-100-0 deleted
-Security Group sg_app-vpc-100-0 deleted
-Security Group sg_rgw-vpc-100-0 deleted
-Security Group sg_pub-vpc-100-0 deleted
-Security Group sg_clu-vpc-100-0 deleted
-Subnet sub_ext_a-vpc-100-0 deleted
-Subnet sub_ext_b-vpc-100-0 deleted
-Subnet sub_app_a-vpc-100-0 deleted
-Subnet sub_app_b-vpc-100-0 deleted
-Subnet sub_rgw_a-vpc-100-0 deleted
-Subnet sub_rgw_b-vpc-100-0 deleted
-Subnet sub_pub_a-vpc-100-0 deleted
-Subnet sub_pub_b-vpc-100-0 deleted
-Subnet sub_clu_a-vpc-100-0 deleted
-Subnet sub_clu_b-vpc-100-0 deleted
-Route Table rt-int-vpc-100-0 with ID: rtb-c3229baa deleted
-Route Table rt-ext-vpc-100-0 with ID: rtb-ce229ba7 deleted
-AmazonEC2ReadOnlyAccess detached from student-vpc-100-0
-Login Profile deleted for User student-vpc-100-0
-Student: student-vpc-100-0 deleted
-Keypair student-vpc-100-0.pem deleted
-IGW igw-54fc2f3d detached
-IGW igw-54fc2f3d deleted
-VPC vpc-363c8f5f deleted
+Set disable API termination for i-19ad5cd8
+Instance osd-node3-vpc-101-20 with ID: OSD_NODE3ID terminating
+Set disable API termination for i-73fd35cf
+Instance osd-node2-vpc-101-20 with ID: OSD_NODE2ID terminating
+Set disable API termination for i-cfac5d0e
+Instance osd-node1-vpc-101-20 with ID: OSD_NODE1ID terminating
+Set disable API termination for i-1bad5cda
+Instance mon1-vpc-101-20 with ID: MON1ID terminating
+Set disable API termination for i-43ac5d82
+Instance radosgw-vpc-101-20 with ID: RADOSGWID terminating
+Set disable API termination for i-9fad5c5e
+Instance devstack-vpc-101-20 with ID: DEVSTACKID terminating
+Set disable API termination for i-40ac5d81
+Instance ceph-admin-vpc-101-20 with ID: CEPH_ADMINID terminating
+Volume osd-node1-vpc-101-20-xvdb with ID: vol-71191598 deleted
+Volume osd-node1-vpc-101-20-xvdc with ID: vol-bd1a1654 deleted
+Volume osd-node1-vpc-101-20-xvdd with ID: vol-ef1a1606 deleted
+Volume osd-node2-vpc-101-20-xvdb with ID: vol-16fbd6f4 deleted
+Volume osd-node2-vpc-101-20-xvdc with ID: vol-bdfad75f deleted
+Volume osd-node2-vpc-101-20-xvdd with ID: vol-b2fad750 deleted
+Volume osd-node3-vpc-101-20-xvdb with ID: vol-8d1a1664 deleted
+Volume osd-node3-vpc-101-20-xvdc with ID: vol-fc1a1615 deleted
+Volume osd-node3-vpc-101-20-xvdd with ID: vol-ff1a1616 deleted
+Security Group sg_ext-vpc-101-20 deleted
+Security Group sg_app-vpc-101-20 deleted
+Security Group sg_rgw-vpc-101-20 deleted
+Security Group sg_pub-vpc-101-20 deleted
+Security Group sg_clu-vpc-101-20 deleted
+Subnet sub_ext_a-vpc-101-20 deleted
+Subnet sub_ext_b-vpc-101-20 deleted
+Subnet sub_app_a-vpc-101-20 deleted
+Subnet sub_app_b-vpc-101-20 deleted
+Subnet sub_rgw_a-vpc-101-20 deleted
+Subnet sub_rgw_b-vpc-101-20 deleted
+Subnet sub_pub_a-vpc-101-20 deleted
+Subnet sub_pub_b-vpc-101-20 deleted
+Subnet sub_clu_a-vpc-101-20 deleted
+Subnet sub_clu_b-vpc-101-20 deleted
+Route Table rt-int-vpc-101-20 with ID: rtb-3df04854 deleted
+Route Table rt-ext-vpc-101-20 with ID: rtb-3af04853 deleted
+AmazonEC2ReadOnlyAccess detached from student-vpc-101-20
+Login Profile deleted for User student-vpc-101-20
+Student: student-vpc-101-20 deleted
+Keypair student-vpc-101-20.pem deleted
+IGW igw-6eef3c07 detached
+IGW igw-6eef3c07 deleted
+VPC vpc-2617a44f deleted

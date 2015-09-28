@@ -15,7 +15,7 @@ source ./scripts/AWS_functions.sh
 # no return values for functions
 result=0
 	
-#result=$(yes_no_input "Do you wish to create lab VPC: $VPC_NAME with CIDR block: $VPC_CIDR y/n:");
+#result=$(yes_no_input "Do you wish to create lab VPC: $VPC_NAME_FULL with CIDR block: $VPC_CIDR y/n:");
 #if [ $result -eq 1 ];then exit 0; fi
 		
 get_vpcid
@@ -154,7 +154,7 @@ scp -i $STUDENT.pem ./$STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP:/home/ubuntu/ceph
 
 ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET=$LAB_SUBNET" >> ./ceph-on-AWS/lab.conf"
 ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET_USER=$LAB_SUBNET_USER" >> ./ceph-on-AWS/lab.conf"
-ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "VPC_NAME=$VPC_NAME" >> ./ceph-on-AWS/lab.conf"
+ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "VPC_NAME_FULL=$VPC_NAME_FULL" >> ./ceph-on-AWS/lab.conf"
 ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "AWSURL=https://$ACCOUNTID.signin.aws.amazon.com/console" >> ./ceph-on-AWS/lab.conf"
 ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "STUDENT=$STUDENT" >> ./ceph-on-AWS/lab.conf"
 

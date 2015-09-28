@@ -57,7 +57,9 @@ function parse_parameters () {
 		s) 
 			if [[ "${OPTARG}" =~ ^[0-9]*$  && "${OPTARG}" -ge 0 && "${OPTARG}" -le 254 ]];
 				then
-					LAB_SUBNET=${OPTARG}		
+					LAB_SUBNET=${OPTARG}
+					VPC_NAME_FULL="vpc-$LAB_SUBNET-$LAB_SUBNET_USER"	
+					VPC_NAME="vpc-$LAB_SUBNET"
 				else
 					echo "subnet value is not valid or not between 0 and 254"
 					exit 1;
@@ -66,14 +68,17 @@ function parse_parameters () {
 		u) 
 			if [[ "${OPTARG}" =~ ^[0-9]*$  && "${OPTARG}" -ge 0 && "${OPTARG}" -le 254 ]];
 				then
-					LAB_SUBNET_USER=${OPTARG}		
+					LAB_SUBNET_USER=${OPTARG}
+					VPC_NAME_FULL="vpc-$LAB_SUBNET-$LAB_SUBNET_USER"	
+					VPC_NAME="vpc-$LAB_SUBNET"	
 				else
 					echo "subnet for user is not valid or not between 0 and 254"
 					exit 1;
 			fi
 			;; 
 		v) 
-			VPC_NAME=${OPTARG}-$LAB_SUBNET-$LAB_SUBNET_USER
+			VPC_NAME_FULL=${OPTARG}-$LAB_SUBNET-$LAB_SUBNET_USER
+			VPC_NAME=${OPTARG}-$LAB_SUBNET
 			;; 
 		*) 
 			echo "Incorrect options provided" 
