@@ -16,13 +16,13 @@ get_vpcid
 
 get_igw
 
-terminate_instance_byname OSD_NODE3ID osd-node3-$LAB_SUBNET_USER
-terminate_instance_byname OSD_NODE2ID osd-node2-$LAB_SUBNET_USER
-terminate_instance_byname OSD_NODE1ID osd-node1-$LAB_SUBNET_USER
-terminate_instance_byname MON1ID mon1-$LAB_SUBNET_USER
-terminate_instance_byname RADOSGWID radosgw-$LAB_SUBNET_USER
-terminate_instance_byname DEVSTACKID devstack-$LAB_SUBNET_USER
-terminate_instance_byname CEPH_ADMINID ceph-admin-$LAB_SUBNET_USER
+terminate_instance_byname OSD_NODE3ID $OSD_NODE3
+terminate_instance_byname OSD_NODE2ID $OSD_NODE2
+terminate_instance_byname OSD_NODE1ID $OSD_NODE1
+terminate_instance_byname MON1ID $MON1
+terminate_instance_byname RADOSGWID $RADOSGW
+terminate_instance_byname DEVSTACKID $DEVSTACK
+terminate_instance_byname CEPH_ADMINID $CEPH_ADMIN
 
 # make sure all instances are terminated before continue
 while [ `aws ec2 describe-instances --output=text --instance-ids $OSD_NODE3ID --query Reservations[*].Instances[*].State.Name` != "terminated" ]; do echo "Wait for terminating OSD_NODE3ID"; done
@@ -71,6 +71,8 @@ delete_login_profile
 delete_user
 
 delete_key_pair 
+
+rm -f $STUDENT.pem
 
 detach_igw
 

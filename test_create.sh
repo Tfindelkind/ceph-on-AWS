@@ -38,5 +38,10 @@ get_main_route_table
 
 #attach_read_policy
 
+delete_key_pair
+
 create_key_pair
 
+create_key_pair
+
+echo "ENDE"

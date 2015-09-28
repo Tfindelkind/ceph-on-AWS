@@ -113,7 +113,6 @@ while [ `aws ec2 describe-instances --output=text --instance-ids $OSD_NODE1ID --
 while [ `aws ec2 describe-instances --output=text --instance-ids $OSD_NODE2ID --query Reservations[*].Instances[*].State.Name` != "running" ]; do echo "Wait for startup osd-node2-$LAB_SUBNET_USER"; done
 while [ `aws ec2 describe-instances --output=text --instance-ids $OSD_NODE3ID --query Reservations[*].Instances[*].State.Name` != "running" ]; do echo "Wait for startup osd-node3-$LAB_SUBNET_USER"; done
 
-
 while [ `aws ec2 describe-volumes --volume-id $OSD_NODE1_XVDBID --output text --query Volumes[*].State` != "available" ] ; do  echo "wait" ; done
 attach_volume $OSD_NODE1ID $OSD_NODE1_XVDBID /dev/xvdb 
 while [ `aws ec2 describe-volumes --volume-id $OSD_NODE1_XVDCID --output text --query Volumes[*].State` != "available" ] ; do  echo "wait" ; done
@@ -134,7 +133,7 @@ while [ `aws ec2 describe-volumes --volume-id $OSD_NODE3_XVDDID --output text --
 attach_volume $OSD_NODE3ID $OSD_NODE3_XVDDID /dev/xvdd
 
 get_public_ip_eni CEPH_ADMIN_PUBLICIP $CEPH_ADMIN_ENIID
-echo "Public IP: $CEPH_ADMIN_PUBLICIP"
+echo_log "Public IP: $CEPH_ADMIN_PUBLICIP"
 
 # wait till ssh is ready to go
 chmod 0400 $STUDENT.pem
@@ -159,17 +158,17 @@ ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "VPC_NAME=$VPC_NAME" >> ./
 ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "AWSURL=https://$ACCOUNTID.signin.aws.amazon.com/console" >> ./ceph-on-AWS/lab.conf"
 ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "STUDENT=$STUDENT" >> ./ceph-on-AWS/lab.conf"
 
-echo "ceph-admin IP: $CEPH_ADMIN_PUBLICIP"
-echo ""
-echo "1. Connect to ceph-admin"
-echo "2. Change directory to ceph-on-AWS" 
-echo "3. Then start setup_ceph-admin.sh"
-echo ""
-echo "User can sign in as $STUDENT with default password at https://$ACCOUNTID.signin.aws.amazon.com/console"
-echo ""
-echo "ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP"
-echo "cd ceph-on-AWS"
-echo "./setup_ceph-admin.sh $AMI"
+echo_log "ceph-admin IP: $CEPH_ADMIN_PUBLICIP"
+echo_log ""
+echo_log "1. Connect to ceph-admin"
+echo_log "2. Change directory to ceph-on-AWS" 
+echo_log "3. Then start setup_ceph-admin.sh"
+echo_log ""
+echo_log "User can sign in as $STUDENT with default password at https://$ACCOUNTID.signin.aws.amazon.com/console"
+echo_log ""
+echo_log "ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP"
+echo_log "cd ceph-on-AWS"
+echo_log "./setup_ceph-admin.sh $AMI"
 
 
 

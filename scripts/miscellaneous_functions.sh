@@ -85,4 +85,25 @@ function parse_parameters () {
 
 }
 
+function exit_on_error () {
+#$1 = success message	
+#$1 = failure message
+	
+	
+	if [ "$?" = "0" ];
+	then
+		echo "$1" | tee -a $LOG_FILE
+	else 
+		echo "$2" | tee -a $LOG_FILE
+		exit 1
+	fi
+	
+}
+
+function echo_log () {
+#$1 = message
+	
+	echo $1 | tee -a $LOG_FILE
+	
+}
 

@@ -42,17 +42,29 @@ function create_vpc () {
 	
 }
 
+function create_name_tag () {
+#$1 = Resource ID	
+#$2 = Name
+	
+	aws ec2 create-tags --resources $1 --tags "Key=Name,Value=$2"
+	
+	exit_on_error "Name tag $2 created for $1" "Name tag $2 couldn't created for $1"
+	
+}
+
+
+
 function create_igw () {
 
 	
 	if [[ -z "$IGWID" ]]; 
 		then
 			IGWID=`aws ec2 create-internet-gateway --query 'InternetGateway.InternetGatewayId' --output text` 
-			aws ec2 create-tags --resources $IGWID --tags "Key=Name,Value=igw-$VPC_NAME"
+			create_name_tag $IGWID "igw-$VPC_NAME"
 			IGW_EXISTS=false
-			echo "Internet Gateway: $IGWID created"
+			echo "Internet Gateway: $IGWID created" | tee -a $LOG_FILE
 		else 
-			echo "Internet Gateway: $IGWID exist and is attached"
+			echo "Internet Gateway: $IGWID exist and is attached" | tee -a $LOG_FILE
 			IGW_EXISTS=true
 	fi			
 }
@@ -61,15 +73,16 @@ function attach_igw () {
 
 	aws ec2 attach-internet-gateway --internet-gateway-id=$IGWID --vpc-id=$VPCID
 
-	echo "Internet Gateway: $IGWID attached to VPC: $VPCID"
+	exit_on_error "Internet Gateway: $IGWID attached to VPC: $VPCID" "Internet Gateway: $IGWID couldn't attached to VPC: $VPCID"
 }
 
 function get_main_route_table () {
 	
 	MAINROUTETABLEID=`aws ec2 describe-route-tables --output=text --filters Name=vpc-id,Values=$VPCID Name=association.main,Values=true --query 'RouteTables[*].Associations[*].RouteTableId'`
-	aws ec2 create-tags --resources $MAINROUTETABLEID --tags "Key=Name,Value=mrt-$VPC_NAME" 
-	echo "Main route table: $MAINROUTETABLEID added to: $VPCID"
 	
+	exit_on_error "Main route table: $MAINROUTETABLEID added to: $VPCID" "Main route table: $MAINROUTETABLEID couldn't added to: $VPCID"
+	
+	create_name_tag $MAINROUTETABLEID "mrt-$VPC_NAME" 
 	
 }
 
@@ -82,8 +95,10 @@ function create_subnet () {
 	local subnetId
 
 	subnetId=`aws ec2 create-subnet --vpc-id=$VPCID --cidr-block $2 --availability-zone $3 --query 'Subnet.SubnetId' --output text`
-	aws ec2 create-tags --resources $subnetId --tags "Key=Name,Value=$4"
-	echo "Subnet $4  with SubnetID: $subnetId in AZ: $3 created"
+	
+	exit_on_error "Subnet $4  with SubnetID: $subnetId in AZ: $3 created" "Subnet $4  with SubnetID: $subnetId in AZ: $3 couldn't created"
+	
+	create_name_tag $subnetId $4
 	
 	eval $__subnetId="'$subnetId'"
 }
@@ -97,8 +112,9 @@ function create_security_group () {
 	local SGId
 	
 	SGId=`aws ec2 create-security-group --group-name $2 --description $3 --vpc-id $VPCID --query 'GroupId' --output text`
-	aws ec2 create-tags --resources $SGId --tags "Key=Name,Value=$2"
-	echo "Security Group $2 : $SGId created"
+	exit_on_error "Security Group $2 : $SGId created" "Security Group $2 : $SGId couldn't created"
+	
+	create_name_tag $SGId $2
 	
 	eval $__SGId="'$SGId'"
 }
@@ -112,7 +128,7 @@ function auth_sg_ingress () {
 		
 	SGId=`aws ec2 authorize-security-group-ingress --group-id $1 --protocol $2 --port $3 --cidr $4`
 	
-	echo "Security Group $1 : authorized protocol $2 on port $3 for $4"
+	exit_on_error "Security Group: $1 authorized protocol $2 on port $3 for $4" "Security Group: $1 couldn't authorized protocol $2 on port $3 for $4" 
 	
 }
 
@@ -137,8 +153,8 @@ function run_instance () {
 	else
 	 InstanceId=`aws ec2 run-instances --image-id $2 --count 1 --instance-type $3 --key-name $4 --security-group-ids $5 --subnet-id $6 --private-ip-address $7 --no-associate-public-ip-address --query 'Instances[0].InstanceId' --output text` 	
 	fi 
-	aws ec2 create-tags --resources $InstanceId --tags "Key=Name,Value=$8"
-	echo "Instance $8 with Id: $InstanceId created"
+	exit_on_error "Instance $8 with Id: $InstanceId created" "Instance $8 with Id: $InstanceId couldn't created"
+	create_name_tag $InstanceId $8
 	
 	eval $__InstanceId="'$InstanceId'"
 }
@@ -154,7 +170,10 @@ function create_volume () {
 	local VolumeId
 	
 	VolumeId=`aws ec2 create-volume --size=$2 --availability-zone $3 --volume-type $4 --output text --query VolumeId`
-	aws ec2 create-tags --resources $VolumeId --tags "Key=Name,Value=$5"
+	exit_on_error "Volume $5 created"  "Volume $5 couldn't created"
+	
+	create_name_tag $VolumeId $5
+	
 	eval $__VolumeId="'$VolumeId'"
 	
 }
@@ -165,6 +184,7 @@ function attach_volume () {
 #$3 = Device name
 	
 	aws ec2 attach-volume --volume-id $2 --instance-id $1 --device $3
+	exit_on_error "Volume $2 attached to $1"  "Volume $5 couldn't attached to $1"
 
 }
 
@@ -176,7 +196,8 @@ function create_route_table () {
 	local RouteTableId
 	
 	RouteTableId=`aws ec2 create-route-table --vpc-id=$VPCID --query 'RouteTable.RouteTableId' --output text`
-	aws ec2 create-tags --resources $RouteTableId --tags "Key=Name,Value=$2"
+	exit_on_error "Route table $2 with ID: $RouteTableId created" "Route table $2 with ID: $RouteTableId couldn't created"
+	create_name_tag $RouteTableId $2
 	
 	eval $__RouteTableId="'$RouteTableId'"
 }
@@ -186,6 +207,7 @@ function associate_route_table () {
 #$2 = Subnet ID
 	
 	aws ec2 associate-route-table --route-table-id $1 --subnet-id $2
+	exit_on_error "Route table $1 associted to Subnet $2" "Route table $1 couldn't associted to Subnet $2"
 	
 }
 
@@ -219,25 +241,29 @@ function associate_route_table () {
 function attach_read_policy () {
 	
 	aws iam attach-user-policy --user-name $STUDENT --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+	
+	exit_on_error "AmazonEC2ReadOnlyAccess attached to $STUDENT" "AmazonEC2ReadOnlyAccess couldn't attached to $STUDENT"
 }
 
 function detach_read_policy () {
 	
 	aws iam detach-user-policy --user-name $STUDENT --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+	
+	echo_log "AmazonEC2ReadOnlyAccess detached from $STUDENT"
 }
 
 function create_key_pair () {
 	
 	aws ec2 create-key-pair --key-name $STUDENT --output text --query 'KeyMaterial' > $STUDENT.pem
 	
-	echo "Keypair created and downloaded to $STUDENT.pem"
+	exit_on_error "Keypair created and downloaded to $STUDENT.pem" "Keypair couldn't created for $STUDENT"
 }
 
 function delete_key_pair () {
 	
 	aws ec2 delete-key-pair --key-name $STUDENT
 	
-	echo "Keypair $STUDENT.pem deleted"
+	echo_log "Keypair $STUDENT.pem deleted"
 }
 
 
@@ -245,7 +271,7 @@ function create_login_profile () {
 	
 	aws iam create-login-profile --user-name $STUDENT --password ceph
 	
-	echo "Default password set for $STUDENT"
+	exit_on_error "Default password set for $STUDENT" "Default password couldn't set for $STUDENT"
 	
 }
 
@@ -253,7 +279,7 @@ function delete_login_profile () {
 	
 	aws iam delete-login-profile --user-name $STUDENT 
 	
-	echo "Login Profile deleted for User $STUDENT"
+	echo_log "Login Profile deleted for User $STUDENT" 
 	
 }
 
@@ -261,7 +287,7 @@ function create_user () {
 	
 	aws iam create-user --user-name $STUDENT
 	
-	echo "Student: $STUDENT created"
+	exit_on_error "Student: $STUDENT created" "Student: $STUDENT couldn't created"
 	
 }
 
@@ -269,7 +295,7 @@ function delete_user () {
 	
 	aws iam delete-user --user-name $STUDENT
 	
-	echo "Student: $STUDENT deleted"
+	echo_log "Student: $STUDENT deleted"
 
 }
 
@@ -277,6 +303,8 @@ function disable_source_dest_check () {
 #$1 = Instance ID
 	
 	aws ec2 modify-instance-attribute --instance-id $1 --source-dest-check "{\"Value\": false}"
+	
+	exit_on_error "Set disable Source-Destination-check for $1" "Set disable Source-Destination-check for $1 failed"
 
 }
 
@@ -284,6 +312,8 @@ function disable_api_termination () {
 #$1= Instance ID
 	
 	aws ec2 modify-instance-attribute --instance-id $1 --no-disable-api-termination
+	
+	echo_log "Set disable API termination for $1"
 
 }
 
@@ -292,7 +322,7 @@ function delete_security_group_byname () {
 	
 	SecurityGroupId=`aws ec2 describe-security-groups --output text --filter Name=vpc-id,Values=$VPCID Name=group-name,Values=$1 --query SecurityGroups[*].GroupId`
 	aws ec2 delete-security-group --group-id $SecurityGroupId
-	echo "Security Group $1 deleted"
+	echo_log "Security Group $1 deleted" 
 	
 }
 
@@ -301,7 +331,7 @@ function delete_subnet_byname () {
 		
 	SubnetId=`aws ec2 describe-subnets --output text --filter Name=vpc-id,Values=$VPCID Name=tag:Name,Values=$1 --query Subnets[*].SubnetId`
 	aws ec2 delete-subnet --subnet-id $SubnetId
-	echo "Subnet $1 deleted"
+	echo_log "Subnet $1 deleted" 
 }
 
 
@@ -310,7 +340,7 @@ function stop_instance_byname () {
 		
 	InstanceId=`aws ec2 describe-instances --filters $filter --output text --filter Name=tag:Name,Values=$1 --query "Reservations[].Instances[].InstanceId"`	
 	aws ec2 stop-instances --instance-ids $InstanceId 
-	echo "Instance $1 stopped"
+	echo_log "Stopping Instanc:e $1" 
 }
 
 function terminate_instance_byname () {
@@ -323,7 +353,7 @@ function terminate_instance_byname () {
 	InstanceId=`aws ec2 describe-instances --filters $filter --output text --filters Name=tag:Name,Values=$2 Name=instance-state-name,Values=pending,running,shutting-down,stopping,stopped --query "Reservations[].Instances[].InstanceId"`	
 	disable_api_termination $InstanceId
 		aws ec2 terminate-instances --instance-ids $InstanceId 
-	echo "Instance $2 with ID: $1 terminating"
+	echo_log "Instance $2 with ID: $1 terminating" 
 	
 	eval $__InstanceId="'$InstanceId'"
 }
@@ -334,7 +364,7 @@ function delete_volume_byname () {
 	
 	VolumeId=`aws ec2 describe-volumes --output text --filters Name=availability-zone,Values=$1 Name=tag:Name,Values=$2 --query "Volumes[].VolumeId"`
 	aws ec2 delete-volume --volume-id $VolumeId
-	echo "Volume $2 with ID: $VolumeId deleted"
+	echo_log "Volume $2 with ID: $VolumeId deleted" 
 	
 }
 
@@ -343,27 +373,27 @@ function delete_route_table_byname () {
 	
 	RouteTableId=`aws ec2 describe-route-tables --output text --filters Name=tag:Name,Values=$1 --query "RouteTables[].RouteTableId"`
 	aws ec2 delete-route-table --route-table-id $RouteTableId
-	echo "Route Table $1 with ID: $RouteTableId deleted"
+	echo_log "Route Table $1 with ID: $RouteTableId deleted" 
 }	
 
 function detach_igw () {
 
 	aws ec2 detach-internet-gateway --internet-gateway-id $IGWID --vpc-id $VPCID
-	echo "IGW $IGWID detached"
+	echo_log "IGW $IGWID detached" 
 	
 }
 
 function delete_igw () {
 
 	aws ec2 delete-internet-gateway --internet-gateway-id $IGWID 
-	echo "IGW $IGWID deleted"
+	echo_log "IGW $IGWID deleted" 
 
 }
 
 function delete_vpc () {
 
 	aws ec2 delete-vpc --vpc-id $VPCID
-	echo "VPC $VPCID deleted"
+	echo_log "VPC $VPCID deleted" 
 
 }
 
@@ -376,6 +406,6 @@ function get_public_ip_eni ()
 	
 	PublicIp=`aws ec2 describe-network-interfaces --network-interface-ids $2 --output text --query "NetworkInterfaces[].PrivateIpAddresses[].Association.PublicIp"`
 	
-	eval $__PublicIp="'$PublicIp'"
+	eval $__PublicIp="'$PublicIp'" 
 
 }

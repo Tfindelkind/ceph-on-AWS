@@ -12,6 +12,7 @@ VPC_NAME="vpc-$LAB_SUBNET-$LAB_SUBNET_USER"
 AMI="ami-accff2b1"
 DEVICE_SIZE=8
 LOG_FILE=ceph_on_AWS.log
+echo "ceph-on-AWS log file: " > ceph_on_AWS.log
 
 #Parse input parameters
 parse_parameters "$@"

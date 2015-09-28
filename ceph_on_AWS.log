@@ -1,0 +1,48 @@
+ceph-on-AWS log file: 
+Set disable API termination for i-ac64926d
+Instance osd-node3-vpc-100-0 with ID: OSD_NODE3ID terminating
+Set disable API termination for i-ceb27a72
+Instance osd-node2-vpc-100-0 with ID: OSD_NODE2ID terminating
+Set disable API termination for i-6c6593ad
+Instance osd-node1-vpc-100-0 with ID: OSD_NODE1ID terminating
+Set disable API termination for i-ae64926f
+Instance mon1-vpc-100-0 with ID: MON1ID terminating
+Set disable API termination for i-50659391
+Instance radosgw-vpc-100-0 with ID: RADOSGWID terminating
+Set disable API termination for i-f3659332
+Instance devstack-vpc-100-0 with ID: DEVSTACKID terminating
+Set disable API termination for i-52659393
+Instance ceph-admin-vpc-100-0 with ID: CEPH_ADMINID terminating
+Volume osd-node1-vpc-100-0-xvdb with ID: vol-67434f8e deleted
+Volume osd-node1-vpc-100-0-xvdc with ID: vol-bf434f56 deleted
+Volume osd-node1-vpc-100-0-xvdd with ID: vol-e0434f09 deleted
+Volume osd-node2-vpc-100-0-xvdb with ID: vol-f6331e14 deleted
+Volume osd-node2-vpc-100-0-xvdc with ID: vol-e7321f05 deleted
+Volume osd-node2-vpc-100-0-xvdd with ID: vol-86331e64 deleted
+Volume osd-node3-vpc-100-0-xvdb with ID: vol-f4434f1d deleted
+Volume osd-node3-vpc-100-0-xvdc with ID: vol-b1434f58 deleted
+Volume osd-node3-vpc-100-0-xvdd with ID: vol-f7434f1e deleted
+Security Group sg_ext-vpc-100-0 deleted
+Security Group sg_app-vpc-100-0 deleted
+Security Group sg_rgw-vpc-100-0 deleted
+Security Group sg_pub-vpc-100-0 deleted
+Security Group sg_clu-vpc-100-0 deleted
+Subnet sub_ext_a-vpc-100-0 deleted
+Subnet sub_ext_b-vpc-100-0 deleted
+Subnet sub_app_a-vpc-100-0 deleted
+Subnet sub_app_b-vpc-100-0 deleted
+Subnet sub_rgw_a-vpc-100-0 deleted
+Subnet sub_rgw_b-vpc-100-0 deleted
+Subnet sub_pub_a-vpc-100-0 deleted
+Subnet sub_pub_b-vpc-100-0 deleted
+Subnet sub_clu_a-vpc-100-0 deleted
+Subnet sub_clu_b-vpc-100-0 deleted
+Route Table rt-int-vpc-100-0 with ID: rtb-c3229baa deleted
+Route Table rt-ext-vpc-100-0 with ID: rtb-ce229ba7 deleted
+AmazonEC2ReadOnlyAccess detached from student-vpc-100-0
+Login Profile deleted for User student-vpc-100-0
+Student: student-vpc-100-0 deleted
+Keypair student-vpc-100-0.pem deleted
+IGW igw-54fc2f3d detached
+IGW igw-54fc2f3d deleted
+VPC vpc-363c8f5f deleted
