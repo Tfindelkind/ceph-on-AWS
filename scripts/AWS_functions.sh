@@ -10,6 +10,7 @@ function get_vpcid () {
 }
 
 function get_igw () {
+	
 	IGWID=`aws ec2 describe-internet-gateways --output text --filter Name=attachment.vpc-id,Values=$VPCID --query 'InternetGateways[*].InternetGatewayId'`
 		
 }
@@ -33,7 +34,7 @@ function create_vpc () {
 	
 			aws ec2 create-tags --resources $VPCID --tags "Key=Name,Value=$VPC_NAME"
 
-			echo "VPC: $VPCID created"
+			echo "VPC: $VPCID created" | tee -a $LOG_FILE
 		else
 			result=$(yes_no_input "Do you really wish to use the existing VPC: $VPCID (y/n):");
 			if [ $result -eq 1 ];then exit 0; fi

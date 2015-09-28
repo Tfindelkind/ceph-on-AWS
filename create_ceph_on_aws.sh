@@ -8,84 +8,6 @@ source ./scripts/config.sh
 source ./scripts/miscellaneous_functions.sh
 source ./scripts/AWS_functions.sh 
 
-#Parse input parameters
-parse_parameters "$@"
-
-#Global variables
-VPCID=0
-VPC_CIDR="10.$LAB_SUBNET.0.0/16"
-STUDENT="student-$LAB_SUBNET-$LAB_SUBNET_USER"
-IGWID=0
-IGW_EXISTS=0
-ACCOUNTID=0
-
-MAINROUTETABLEID=0
-ROUTETABLE_INTID=0
-ROUTETABLE_EXTID=0
-
-ROUTETABLE_INT="rt-int-$LAB_SUBNET_USER"
-ROUTETABLE_EXT="rt-ext-$LAB_SUBNET_USER"
-
-
-CEPH_ADMIN="ceph-admin-$LAB_SUBNET_USER"
-DEVSTACK="devstack-$LAB_SUBNET_USER"
-RADOSGW="radosgw-$LAB_SUBNET_USER"
-MON1="mon1-$LAB_SUBNET_USER"
-OSD_NODE1="osd-node1-$LAB_SUBNET_USER"
-OSD_NODE2="osd-node2-$LAB_SUBNET_USER"
-OSD_NODE3="osd-node3-$LAB_SUBNET_USER"
-
-
-SUB_EXT_AID=0
-SUB_EXT_A_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.2/28"
-SUB_EXT_BID=0
-SUB_EXT_B_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.16/28"
-SUB_APP_AID=0
-SUB_APP_A_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.32/28"
-SUB_APP_BID=0
-SUB_APP_B_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.48/28"
-SUB_RGW_AID=0
-SUB_RGW_A_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.64/28"
-SUB_RGW_BID=0
-SUB_RGW_B_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.88/28"
-SUB_PUB_AID=0
-SUB_PUB_A_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.96/28"
-SUB_PUB_BID=0
-SUB_PUB_B_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.112/28"
-SUB_CLU_AID=0
-SUB_CLU_A_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.128/28"
-SUB_CLU_BID=0
-SUB_CLU_B_CIDR="10.$LAB_SUBNET.$LAB_SUBNET_USER.144/28"
-
-SG_EXTID=0
-SG_APPID=0
-SG_RGWID=0
-SG_PUBID=0
-SG_CLUID=0
-
-CEPH_ADMINID=0
-DEVSTACKID=0
-RADOSGWID=0
-MON1ID=0
-OSD_NODE1ID=0
-OSD_NODE2ID=0
-OSD_NODE3ID=0
-
-CEPH_ADMIN_ENIID=0
-CEPH_ADMIN_PUBLICIP=0
-
-OSD_NODE1_XVDBID=0
-OSD_NODE1_XVDCID=0
-OSD_NODE1_XVDDID=0
-OSD_NODE2_XVDBID=0
-OSD_NODE2_XVDCID=0
-OSD_NODE2_XVDDID=0
-OSD_NODE3_XVDBID=0
-OSD_NODE3_XVDCID=0
-OSD_NODE3_XVDDID=0
-
-
-
 ########################################################
 # Main
 
@@ -219,28 +141,29 @@ chmod 0400 $STUDENT.pem
 ssh-keyscan -H $CEPH_ADMIN_PUBLICIP >> ~/.ssh/known_hosts
 SSH_EXIT_STATUS=255
 while [[ $SSH_EXIT_STATUS -eq 255 ]];do
-    ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP echo "ping ssh"
+    ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP echo "ping ssh"
     SSH_EXIT_STATUS=$?
     sleep 2
 done
 
-ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update
+ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update
 
-ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update 
-ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get install -y git 
-ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP git clone https://github.com/Tfindelkind/ceph-on-AWS
-scp -i $STUDENT.pem ./$STUDENT.pem ubuntu@$$CEPH_ADMIN_PUBLICIP:/home/ubuntu/ceph-on-AWS
+ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get update 
+ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP sudo apt-get install -y git 
+ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP git clone https://github.com/Tfindelkind/ceph-on-AWS
+scp -i $STUDENT.pem ./$STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP:/home/ubuntu/ceph-on-AWS
 
-ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET=$LAB_SUBNET" >> ./ceph-on-AWS/lab.conf"
-ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET_USER=$LAB_SUBNET_USER" >> ./ceph-on-AWS/lab.conf"
-ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "AWSURL=https://$ACCOUNTID.signin.aws.amazon.com/console" >> ./ceph-on-AWS/lab.conf"
-ssh -v -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "STUDENT=$STUDENT" >> ./ceph-on-AWS/lab.conf"
+ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET=$LAB_SUBNET" >> ./ceph-on-AWS/lab.conf"
+ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "LAB_SUBNET_USER=$LAB_SUBNET_USER" >> ./ceph-on-AWS/lab.conf"
+ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "VPC_NAME=$VPC_NAME" >> ./ceph-on-AWS/lab.conf"
+ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "AWSURL=https://$ACCOUNTID.signin.aws.amazon.com/console" >> ./ceph-on-AWS/lab.conf"
+ssh -i $STUDENT.pem ubuntu@$CEPH_ADMIN_PUBLICIP "echo "STUDENT=$STUDENT" >> ./ceph-on-AWS/lab.conf"
 
 echo "ceph-admin IP: $CEPH_ADMIN_PUBLICIP"
 echo ""
 echo "1. Connect to ceph-admin"
 echo "2. Change directory to ceph-on-AWS" 
-echo "3. Then start ceph install with"
+echo "3. Then start setup_ceph-admin.sh"
 echo ""
 echo "User can sign in as $STUDENT with default password at https://$ACCOUNTID.signin.aws.amazon.com/console"
 echo ""

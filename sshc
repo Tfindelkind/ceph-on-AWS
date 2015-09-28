@@ -1,1 +1,0 @@
-ssh -v -i ceph-lab.pem ubuntu@$1

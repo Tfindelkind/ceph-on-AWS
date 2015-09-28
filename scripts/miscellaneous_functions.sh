@@ -42,7 +42,7 @@ function parse_parameters () {
 
 	local OPTIND o a 
 
-	while getopts "a:b:hs:au:v" o; do 
+	while getopts "a:b:hs:u:v:" o; do 
 		case "${o}" in 
 		a) 
 			AZ_A=${OPTARG}				
@@ -73,7 +73,7 @@ function parse_parameters () {
 			fi
 			;; 
 		v) 
-			VPC_NAME=${OPTARG}
+			VPC_NAME=${OPTARG}-$LAB_SUBNET-$LAB_SUBNET_USER
 			;; 
 		*) 
 			echo "Incorrect options provided" 

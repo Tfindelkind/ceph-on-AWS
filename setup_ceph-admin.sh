@@ -18,6 +18,8 @@ echo ubuntu:ceph | sudo /usr/sbin/chpasswd
 # config for NAT
 sudo cp ./config-files/sysctl.conf /etc/sysctl.conf 
 sudo apt-get update
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
 sudo apt-get install -y iptables-persistent
 sudo iptables -t nat -A POSTROUTING -s 10.$LAB_SUBNET.0.0/16 -j MASQUERADE
 sudo /bin/su -c "iptables-save > /etc/iptables/rules.v4"
@@ -72,10 +74,10 @@ ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.148 >> ~/.ssh/known_hosts
 ssh-keyscan -H osd-node3 >> ~/.ssh/known_hosts
 ssh-keyscan -H 10.$LAB_SUBNET.$LAB_SUBNET_USER.133 >> ~/.ssh/known_hosts
 
-./prepare_node.sh devstack
-./prepare_node.sh radosgw
-./prepare_node.sh mon1
-./prepare_node.sh osd-node1
-./prepare_node.sh osd-node2
-./prepare_node.sh osd-node3
-./prepare_node.sh ceph-admin
+./scripts/prepare_node.sh devstack
+./scripts/prepare_node.sh radosgw
+./scripts/prepare_node.sh mon1
+./scripts/prepare_node.sh osd-node1
+./scripts/prepare_node.sh osd-node2
+./scripts/prepare_node.sh osd-node3
+./scripts/prepare_node.sh ceph-admin
